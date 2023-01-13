@@ -1,0 +1,22 @@
+name: census
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.8
+  - requests
+  - pip
+  - fastapi
+  - uvicorn
+  - jupyter
+  - jupyterlab
+  - scikit-learn
+  - scipy
+  - numpy
+  - pandas
+  - matplotlib
+  - seaborn
+  - pip:
+      - pytest
+      - flake8
+      - setuptools

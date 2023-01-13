@@ -1,0 +1,7 @@
+.vscode
+.DS_Store
+__pycache__
+.ipynb_checkpoints
+vanilla_deployments
+mlops_udacity
+eda_fe_summary

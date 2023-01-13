@@ -4,6 +4,15 @@ In this project, a simple census dataset is used to create a model pipeline, tra
 
 I forked the starter code for this project from a Udacity [exercise/demo repository](https://github.com/udacity/nd0821-c3-starter-code) and modified it to the present form.
 
+The focus of this project doesn't lie so much on the data processing, but on the techniques and technologies used for model/pipeline deployment. A list of the most important MLOps methods and tools is the following:
+
+- FastAPI
+- Heroku
+- Type hints and Pydantic
+- Pytest
+- Python packaging
+- DVC
+
 ## Table of Contents
 
 - [Census Model Deployment to Heroku Using FastAPI](#census-model-deployment-to-heroku-using-fastapi)
@@ -74,6 +83,9 @@ List of most important dependencies:
 ## Results and Conclusions
 
 ## Next Steps, Improvements
+
+- [ ] Implement authentication.
+- [ ] Create a simple front-end for the API (e.g., a form).
 
 ## References and Links
 

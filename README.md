@@ -1,6 +1,6 @@
 # Census Model Deployment to Heroku Using FastAPI
 
-In this project, a simple census dataset is used to create a model pipeline, train it and deploy it to Heroku using FastAPI. The dataset consists of X entries of different people, each with X features (age, education, etc.) and the model infers the salary range of an entry.
+In this project, a simple census dataset is used to create a model pipeline, train it and deploy it to Heroku using FastAPI. The dataset consists of 32,561 entries of different people, each with 14 features (age, education, etc.) and the model infers the salary range of an entry.
 
 I forked the starter code for this project from a Udacity [exercise/demo repository](https://github.com/udacity/nd0821-c3-starter-code) and modified it to the present form.
 
@@ -56,14 +56,7 @@ If you'd like to control where the notebook runs, you need to create a custom en
 ```bash
 # Create environment with YAML, incl. packages
 conda env create -f conda.yaml
-conda activate env-name
-
-# Install pip dependencies
-pip install requirements.txt
-
-# Track any changes and versions you have
-conda env export > conda_.yaml
-pip freeze > requirements_.txt
+conda activate census
 ```
 
 List of most important dependencies:

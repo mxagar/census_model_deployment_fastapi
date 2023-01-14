@@ -5,3 +5,4 @@ __pycache__
 vanilla_deployments
 mlops_udacity
 eda_fe_summary
+artifacts/*.pickle

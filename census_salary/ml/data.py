@@ -31,7 +31,7 @@ logging.basicConfig(
 logger = logging.getLogger()
 
 def process_data(
-    X,
+    df,
     categorical_features=[],
     numerical_features=[],    
     label=None,
@@ -60,7 +60,7 @@ def process_data(
 
     Inputs
     ------
-    X : pd.DataFrame
+    df : pd.DataFrame
         Dataframe containing the features and label.
     categorical_features: list[str]
         List containing the names of the categorical features (default=[]).
@@ -100,10 +100,11 @@ def process_data(
     """
 
     if label is not None:
-        y = X[label]
-        X = X.drop([label], axis=1)
+        y = df[label]
+        X = df.drop([label], axis=1)
     else:
         y = np.array([])
+        X = df
         try:
             assert not training
         except AssertionError as e:

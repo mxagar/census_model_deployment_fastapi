@@ -103,7 +103,7 @@ def process_data(
     if training is True:        
         ## -- 1. Features
         # Define processing for categorical columns
-        # handle_unknown: label encoders need to be able to deal with unknown labesl!
+        # handle_unknown: label encoders need to be able to deal with unknown labels!
         categorical_transformer = make_pipeline(
             SimpleImputer(strategy="constant", fill_value=0),
             OneHotEncoder(sparse_output=False, handle_unknown="ignore")

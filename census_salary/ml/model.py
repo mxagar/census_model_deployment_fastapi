@@ -9,8 +9,16 @@ It:
 Author: Mikel Sagardia
 Date: 2023-01-16
 """
+import pickle
+import numpy as np
+import pandas as pd
 
-from sklearn.metrics import fbeta_score, precision_score, recall_score, roc_auc_score
+from sklearn.metrics import (fbeta_score,
+                             precision_score,
+                             recall_score,
+                             roc_auc_score)
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import GridSearchCV
 
 # Optional: implement hyperparameter tuning.
 def train_model(X_train, y_train, config_model, config_grid):
@@ -64,7 +72,9 @@ def compute_model_metrics(y, preds, probs):
     precision = precision_score(y, preds, zero_division=1)
     recall = recall_score(y, preds, zero_division=1)
     roc_auc = roc_auc_score(y, probs)
+    
     return precision, recall, fbeta, roc_auc
+
 
 def inference(model, X, compute_probabilities=False):
     """ Run model inferences and return the predictions.

@@ -14,6 +14,11 @@ Date: 2023-01-16
 """
 # Script to train machine learning model.
 
+import pickle
+import yaml
+import numpy as np
+import pandas as pd
+
 from sklearn.model_selection import train_test_split
 
 # Add the necessary imports for the starter code.
@@ -40,3 +45,11 @@ X_train, y_train, encoder, lb = process_data(
 # Proces the test data with the process_data function.
 
 # Train and save a model.
+def run_setup():
+    pass
+
+def run_processing():
+    pass
+
+def run_training():
+    pass

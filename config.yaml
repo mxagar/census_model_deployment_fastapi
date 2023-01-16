@@ -1,4 +1,4 @@
-random_forest:
+random_forest_parameters:
   # This section is passed to the random forest model
   # as a dictionary of parameters, thus names must match with
   # the sklearn API.
@@ -7,6 +7,8 @@ random_forest:
   # That is easier than passing parameters in the code or via CLI
   # and we can guarantee compatibility in the code in case the model API changes
   # (i.e., we would simply change the config file).
+  # NOTE: These default parameters can be overwritten
+  # by the hyperparameter tuning 
   n_estimators: 100
   criterion: 'gini'
   max_depth: 13
@@ -26,20 +28,42 @@ random_forest:
   class_weight: "balanced"
   ccp_alpha: 0.0
   max_samples: null
+random_forest_grid_search:
+  hyperparameters:
+    n_estimators:
+      - 100
+      - 150
+      - 200
+    max_features:
+      - "sqrt"
+      - "log2"
+    criterion:
+      - "gini"
+      - "entropy"
+    max_depth:
+      - 5
+      - 10
+      - 15
+  cv: 3
+  scoring: 'roc_auc'
+target: "salary"
 features:
   numerical:
-    - "danceability"
-    - "energy"
-    - "loudness"
-    - "speechiness"
-    - "acousticness"
-    - "instrumentalness"
-    - "liveness"
-    - "valence"
-    - "tempo"
-    - "duration_ms"
+    - "age"
+    - "fnlgt"
+    - "education-num"
+    - "capital-gain"
+    - "capital-loss"
+    - "hours-per-week"
   categorical:
-    - "time_signature"
-    - "key"
-model_artifact: "model_export"
-processing_artifact: "model_export"
+    - "workclass"
+    - "education"
+    - "marital-status"
+    - "occupation"
+    - "relationship"
+    - "race"
+    - "sex"
+    - "native-country"
+model_artifact: "model.pickle"
+processing_artifact: "processing_parameters.pickle"
+evaluation_artifact: "evaluation_report.txt"

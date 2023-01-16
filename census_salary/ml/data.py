@@ -11,16 +11,24 @@ processing parameters is returned.
 Author: Mikel Sagardia
 Date: 2023-01-16
 """
-import itertools
+import logging
 import numpy as np
-import pandas as pd
+#import pandas as pd
 
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import (OneHotEncoder,
                                    StandardScaler,
                                    LabelBinarizer)
-from sklearn.pipeline import Pipeline, make_pipeline
+from sklearn.pipeline import make_pipeline #, Pipeline 
 from sklearn.compose import ColumnTransformer
+
+# Logging configuration
+logging.basicConfig(
+    filename='./logs/census_pipeline.log', # filename, where it's dumped
+    level=logging.INFO, # minimum level I log
+    filemode='a', # append
+    format='%(name)s - %(asctime)s - %(levelname)s - data.process_data - %(message)s') # add function/module name for tracing
+logger = logging.getLogger()
 
 def process_data(
     X,
@@ -96,11 +104,15 @@ def process_data(
         X = X.drop([label], axis=1)
     else:
         y = np.array([])
+        try:
+            assert not training
+        except AssertionError as e:
+            logger.error("In training mode, the target/label must be provided.")
 
     #X_categorical = X[categorical_features].values
     #X_numerical = X[numerical_features].values
 
-    if training is True:        
+    if training is True or not processing_parameters: # TRAINING  
         ## -- 1. Features
         # Define processing for categorical columns
         # handle_unknown: label encoders need to be able to deal with unknown labels!
@@ -125,7 +137,7 @@ def process_data(
         # Train & transform
         X_transformed = feature_processor.fit_transform(X)
         
-        ## -- 2. Traget      
+        ## -- 2. Target      
         target_processor = LabelBinarizer()
         y_transformed = target_processor.fit_transform(y).ravel()
         
@@ -138,15 +150,31 @@ def process_data(
         processing_parameters['feature_processor'] = feature_processor
         processing_parameters['target_processor'] = target_processor
         
-    else:
-        feature_processor = processing_parameters['feature_processor']
-        target_processor = processing_parameters['target_processor']
+        logger.info("Data processing pipeline trained and data transformed.")
         
-        X_transformed = feature_processor.transform(X)
+    else: # PREDICTION
+        ## -- 1. Extract processors
+        try:
+            feature_processor = processing_parameters['feature_processor']
+            target_processor = processing_parameters['target_processor']
+        except KeyError as e:
+            logger.error("Processing parameters object has missing keys.")
+        except TypeError as e:
+            logger.error("Processing parameters object is not the expect object type.")
+        
+        ## -- 2. Transform
+        # X
+        try:
+            X_transformed = feature_processor.transform(X)
+        except ValueError as e:
+            logger.error("The columns in X don't match with the columns expected by the processing pipeline.")        
+        # y
         try:
             y_transformed = target_processor.transform(y).ravel()
-        # Catch the case where y is None because we're doing inference.
-        except AttributeError:
-            pass
+        except ValueError as e:
+            y_transformed = np.array([])
+            logger.info("Empty target/label array.")
+            
+        logger.info("Data transformed.")
 
     return X_transformed, y_transformed, processing_parameters

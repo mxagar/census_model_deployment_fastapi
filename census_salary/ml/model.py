@@ -9,6 +9,7 @@ It:
 Author: Mikel Sagardia
 Date: 2023-01-16
 """
+import logging
 import pickle
 import numpy as np
 import pandas as pd
@@ -20,17 +21,27 @@ from sklearn.metrics import (fbeta_score,
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV
 
-# Optional: implement hyperparameter tuning.
+# Logging configuration
+logging.basicConfig(
+    filename='./logs/census_pipeline.log', # filename, where it's dumped
+    level=logging.INFO, # minimum level I log
+    filemode='a', # append
+    format='%(name)s - %(asctime)s - %(levelname)s - model - %(message)s') # add function/module name for tracing
+logger = logging.getLogger()
+
 def train_model(X_train, y_train, config_model, config_grid):
     """
     Trains a machine learning model and returns it.
+    Hyperparameter tuning is performed according to the
+    passed grid values.
+    The passed data must be already processed.
 
     Inputs
     ------
     X_train : np.array
-        Training data.
+        Training data, already processed.
     y_train : np.array
-        Labels.
+        Labels, already processed.
     config_model : dict
         Dictionary with configuration paramaters
         for the model, loaded from ROOT/config.yaml
@@ -39,13 +50,47 @@ def train_model(X_train, y_train, config_model, config_grid):
         for the grid search, loaded from ROOT/config.yaml
     Returns
     -------
-    model
+    model : sklearn model object (sklearn.ensemble.RandomForestClassifier)
         Trained machine learning model.
+    best_params : dict
+        Dictionary with best hyperparameters found in the gird search.
+    best_score : float
+        Best scoring value after the training with hyperparameter tuning
+        using grid search.
     """
+    # Random forest classifier
+    estimator = RandomForestClassifier(**config_model)
 
+    # Define Grid Search: parameters to try, cross-validation size
+    #param_grid = {
+    #    'n_estimators': [100, 150, 200],
+    #    'max_features': ['sqrt', 'log2'],
+    #    'criterion': ['gini', 'entropy'],
+    #    'max_depth': [None]+[n for n in range(5,20,5)]
+    #}
+    param_grid = config_grid['hyperparameters']
+    param_grid['max_depth'] = [None] + param_grid['max_depth']
 
+    # Grid search
+    search = GridSearchCV(estimator=estimator,
+                        param_grid=param_grid,
+                        cv=config_grid['cv'], # 3
+                        scoring=config_grid['scoring']) # 'roc_auc'
 
-    pass
+    # Find best hyperparameters and best estimator pipeline
+    search.fit(X_train, y_train)
+    logger.info("Model successfully trained.")
+    
+    model = search.best_estimator_
+    best_params = search.best_params_
+    best_score = search.best_score_
+
+    score_string = config_grid['scoring'] + " = " + str(best_score)
+    logger.info("Best score: ", %s, score_string)
+    params_string = str(best_params)
+    logger.info("Best hyperparameters: ", %s, params_string)
+
+    return model, best_params, best_score
 
 
 def compute_model_metrics(y, preds, probs):
@@ -59,7 +104,7 @@ def compute_model_metrics(y, preds, probs):
     preds : np.array
         Predicted labels, binarized.
     probs : np.array
-        Predicted probabilities, for ROC computation.
+        Predicted probabilities, for ROC AUC computation.
         
     Returns
     -------
@@ -96,6 +141,11 @@ def inference(model, X, compute_probabilities=False):
     probs : np.array
         Prediction probabilities from the model.
         If compute_probabilities=False (default),
-        None is returned.
+        [] is returned.
     """
-    pass
+    preds = model.predict(X)
+    probs = []
+    if compute_probabilities:
+        probs = model.predict_proba(X)[:, 1]
+
+    return preds, probs

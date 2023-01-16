@@ -1,5 +1,6 @@
 data_path: "./data/census.csv"
 test_size: 0.2
+random_seed: 42
 target: "salary"
 features:
   numerical:
@@ -66,6 +67,6 @@ random_forest_grid_search:
       - 15
   cv: 3
   scoring: 'roc_auc'
-model_artifact: "model.pickle"
-processing_artifact: "processing_parameters.pickle"
-evaluation_artifact: "evaluation_report.txt"
+model_artifact: "./exported_artifacts/model.pickle"
+processing_artifact: "./exported_artifacts/processing_parameters.pickle"
+evaluation_artifact: "./exported_artifacts/evaluation_report.txt"

@@ -17,7 +17,7 @@ import pandas as pd
 
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import (OneHotEncoder,
-                                   StandardScaler
+                                   StandardScaler,
                                    LabelBinarizer)
 from sklearn.pipeline import Pipeline, make_pipeline
 from sklearn.compose import ColumnTransformer
@@ -131,8 +131,8 @@ def process_data(
         
         ## -- 3. Pack everything into a dictionary
         processing_parameters = dict()
-        processing_parameters['features'] = features
-        processing_parameters['target'] = target
+        processing_parameters['features'] = categorical_features + numerical_features
+        processing_parameters['target'] = label
         processing_parameters['categorical_features'] = categorical_features
         processing_parameters['numerical_features'] = numerical_features
         processing_parameters['feature_processor'] = feature_processor

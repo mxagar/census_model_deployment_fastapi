@@ -11,14 +11,21 @@ processing parameters is returned.
 Author: Mikel Sagardia
 Date: 2023-01-16
 """
-
+import itertools
 import numpy as np
-from sklearn.preprocessing import LabelBinarizer, OneHotEncoder
+import pandas as pd
 
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import (OneHotEncoder,
+                                   StandardScaler
+                                   LabelBinarizer)
+from sklearn.pipeline import Pipeline, make_pipeline
+from sklearn.compose import ColumnTransformer
 
 def process_data(
     X,
     categorical_features=[],
+    numerical_features=[],    
     label=None,
     training=True,
     processing_parameters=None
@@ -49,6 +56,8 @@ def process_data(
         Dataframe containing the features and label.
     categorical_features: list[str]
         List containing the names of the categorical features (default=[]).
+    numerical_features: list[str]
+        List containing the names of the numerical features (default=[]).
     label : str
         Name of the label/target column in `X`. If None, then an empty array will be returned
         for y (default=None).
@@ -88,21 +97,56 @@ def process_data(
     else:
         y = np.array([])
 
-    X_categorical = X[categorical_features].values
-    X_continuous = X.drop(*[categorical_features], axis=1)
+    #X_categorical = X[categorical_features].values
+    #X_numerical = X[numerical_features].values
 
-    if training is True:
-        encoder = OneHotEncoder(sparse=False, handle_unknown="ignore")
-        lb = LabelBinarizer()
-        X_categorical = encoder.fit_transform(X_categorical)
-        y = lb.fit_transform(y.values).ravel()
+    if training is True:        
+        ## -- 1. Features
+        # Define processing for categorical columns
+        # handle_unknown: label encoders need to be able to deal with unknown labesl!
+        categorical_transformer = make_pipeline(
+            SimpleImputer(strategy="constant", fill_value=0),
+            OneHotEncoder(sparse_output=False, handle_unknown="ignore")
+        )
+        # Define processing for numerical columns
+        numerical_transformer = make_pipeline(
+            SimpleImputer(strategy="median"),
+            StandardScaler()
+        )
+        # Put the 2 tracks together into one pipeline using the ColumnTransformer
+        # This also drops the columns that we are not explicitly transforming
+        feature_processor = ColumnTransformer(
+            transformers=[
+                ("num", numerical_transformer, numerical_features),
+                ("cat", categorical_transformer, categorical_features),
+            ],
+            remainder="drop",  # This drops the columns that we do not transform
+        )
+        # Train & transform
+        X_transformed = feature_processor.fit_transform(X)
+        
+        ## -- 2. Traget      
+        target_processor = LabelBinarizer()
+        y_transformed = target_processor.fit_transform(y).ravel()
+        
+        ## -- 3. Pack everything into a dictionary
+        processing_parameters = dict()
+        processing_parameters['features'] = features
+        processing_parameters['target'] = target
+        processing_parameters['categorical_features'] = categorical_features
+        processing_parameters['numerical_features'] = numerical_features
+        processing_parameters['feature_processor'] = feature_processor
+        processing_parameters['target_processor'] = target_processor
+        
     else:
-        X_categorical = encoder.transform(X_categorical)
+        feature_processor = processing_parameters['feature_processor']
+        target_processor = processing_parameters['target_processor']
+        
+        X_transformed = feature_processor.transform(X)
         try:
-            y = lb.transform(y.values).ravel()
+            y_transformed = target_processor.transform(y).ravel()
         # Catch the case where y is None because we're doing inference.
         except AttributeError:
             pass
 
-    X = np.concatenate([X_continuous, X_categorical], axis=1)
-    return X, y, encoder, lb
+    return X_transformed, y_transformed, processing_parameters

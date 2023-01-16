@@ -47,7 +47,8 @@ You can run the notebook at leas in two ways:
 1. In a custom environment, e.g., locally or on a container. To that end, you can create a [conda](https://docs.conda.io/en/latest/) environment and install the [dependencies](#installing-dependencies-for-custom-environments) as explained below.
 2. In Google Colab. For that, simply click on the following link:
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/mxagar/census_model_deployment_fastapi/blob/main/census_notebook.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mxagar/census_model_deployment_fastapi/blob/master/census_notebook.ipynb)
+
 
 ### Installing Dependencies for Custom Environments
 

@@ -13,6 +13,7 @@ Author: Mikel Sagardia
 Date: 2023-01-16
 """
 # Script to train machine learning model.
+from datetime import datetime
 import logging
 import pickle
 import yaml
@@ -156,6 +157,20 @@ def train_pipeline(config_filename='config.yaml'):
     
     # Persist metrics
     test_scores = (precision, recall, fbeta, roc_auc)
+    report = []
+    report.append(f'Training and evaluation report, {datetime.now()}')
+    report.append(' ')
+    report.append('# TRAINING')
+    report.append(f'Best score - {} = {best_score}')
+    report.append(f'Best model hyperparameters: {str(best_params)}')
+    report.append(' ')
+    report.append('# EVALUATION (test split)')
+    report.append(f'Precision = {precision}')
+    report.append(f'Recall = {recall}')
+    report.append(f'F1 = {fbeta}')
+    report.append(f'ROC-AUC = {roc_auc}')
+    with open(config['evaluation_artifact'], 'w') as f:
+        f.write('\n'.join(report))
 
     return model, processing_parameters, config, test_scores
 

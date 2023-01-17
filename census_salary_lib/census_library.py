@@ -200,3 +200,28 @@ def predict(X, model, processing_parameters):
     pred, _ = inference(model, X_trans, compute_probabilities=False)
     
     return pred
+
+if __name__ == "__main__":
+    
+    model, processing_parameters, config = train_pipeline(config_filename='config.yaml')
+    
+    """
+    import census_salary_lib as cs
+
+    # Train, is not trained yet
+    model, processing_parameters, config = cs.train_pipeline(config_filename='config.yaml')
+
+    # Load pipeline, if training performed in another execution/session
+    model, processing_parameters, config = cs.load_pipeline(config_filename='config.yaml')
+    
+    # Get data: 
+    df = pd.read_csv('./data/census.csv')
+    df = df.rename(columns={col_name: col_name.replace(' ', '') for col_name in df.columns})
+    X = df.iloc[:100, :]
+    
+    # Predict salary
+    pred = cs.predict(X, model, processing_parameters)
+    # Decode
+    pred_decoded = cs.decode_labels(pred, processing_parameters)
+    
+    """

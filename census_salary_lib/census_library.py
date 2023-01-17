@@ -56,11 +56,17 @@ def run_setup(config_filename='config.yaml', config=None):
     
     # Load dataset
     data_path = config['data_path']
-    df = pd.read_csv(data_path) # './data/census.csv'
+    try:
+        df = pd.read_csv(data_path) # './data/census.csv'
+    except FileNotFoundError as e:
+        logger.error("Dataset file not found: %s", data_path)
     logger.info("Dataset correctly loaded.")
 
-    # Rename columns: remove preceding blank space: ' education' -> 'education', etc.
+    # Rename columns:
+    # remove preceding blank space: ' education' -> 'education', etc.
+    # replace - with _: 'education-num' -> 'education_num', etc.
     df = df.rename(columns={col_name: col_name.replace(' ', '') for col_name in df.columns})
+    df = df.rename(columns={col_name: col_name.replace('-', '_') for col_name in df.columns})
 
     # Drop duplicates
     df = df.drop_duplicates().reset_index(drop=True)
@@ -126,6 +132,9 @@ def run_processing(df, config, training=True, processing_parameters=None):
     logger.info("Processing parameters correctly persisted.")
 
     return X_transformed, y_transformed, processing_parameters
+
+def create_evaluation_report():
+    pass
 
 def train_pipeline(config_filename='config.yaml'):
 

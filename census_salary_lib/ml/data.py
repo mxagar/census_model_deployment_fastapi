@@ -98,13 +98,23 @@ def process_data(
         the dictionary is re-generated and returned.
         Otherwise, the input dictionary is returned.
     """
+    # Collection of all feature columns
+    features = numerical_features + categorical_features
 
     if label is not None:
-        y = df[label]
-        X = df.drop([label], axis=1)
+        try:
+            y = df[label]
+            #X = df.drop([label], axis=1)
+            X = df[features]
+        except KeyError as e:
+            logger.error("A column is missing in the dataset.")
     else:
-        y = np.array([])
-        X = df
+        try:
+            y = np.array([])
+            #X = df
+            X = df[features]
+        except KeyError as e:
+            logger.error("A column is missing in the dataset.")
         try:
             assert not training
         except AssertionError as e:

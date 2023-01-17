@@ -22,10 +22,20 @@ import pandas as pd
 
 from sklearn.model_selection import train_test_split
 
-from .ml.data import process_data
 from .ml.model import (train_model,
                        compute_model_metrics,
                        inference)
+from .ml.data import process_data
+from .census_library import (run_setup,
+                          run_processing,
+                          train_pipeline,
+                          load_pipeline,
+                          predict)
+from .core.core import (load_data,
+                        validate_data,
+                        load_validate_config,
+                        load_validate_processing_parameters,
+                        load_validate_model)
 
 # Logging configuration
 logging.basicConfig(
@@ -36,41 +46,21 @@ logging.basicConfig(
 logger = logging.getLogger()
 
 def run_setup(config_filename='config.yaml', config=None):
-    """_summary_
-
-    Args:
-        config_filename (str, optional): _description_. Defaults to 'config.yaml'.
-        config (_type_, optional): _description_. Defaults to None.
-
-    Returns:
-        _type_: _description_
+    """
     """
     if not config:
         # Load configuration dictionary, since it's not passed
-        config = dict()
-        try:
-            with open(config_filename) as f: # 'config.yaml'
-                config = yaml.safe_load(f)
-        except FileNotFoundError as e:
-            logger.error("Configuration file not found: %s", config_filename)
+        config = load_validate_config(config_filename)
+        logger.info("Configuration file correctly loaded.")
     
     # Load dataset
     data_path = config['data_path']
-    try:
-        df = pd.read_csv(data_path) # './data/census.csv'
-    except FileNotFoundError as e:
-        logger.error("Dataset file not found: %s", data_path)
+    df = load_data(data_path=data_path)
     logger.info("Dataset correctly loaded.")
 
-    # Rename columns:
-    # remove preceding blank space: ' education' -> 'education', etc.
-    # replace - with _: 'education-num' -> 'education_num', etc.
-    df = df.rename(columns={col_name: col_name.replace(' ', '') for col_name in df.columns})
-    df = df.rename(columns={col_name: col_name.replace('-', '_') for col_name in df.columns})
-
-    # Drop duplicates
-    df = df.drop_duplicates().reset_index(drop=True)
-    logger.info("Dataset correctly cleaned: columns renamed and duplicated dropped.")
+    # Validate dataset
+    df, _ = validate_data(df=df)    
+    logger.info("Dataset correctly validated: columns are OK, some renamed, duplicated dropped, etc.")
 
     # Segregate
     df_train, df_test = train_test_split(df,
@@ -82,15 +72,7 @@ def run_setup(config_filename='config.yaml', config=None):
     return df_train, df_test, config
 
 def run_processing(df, config, training=True, processing_parameters=None):
-    """_summary_
-
-    Args:
-        df (_type_): _description_
-        config (_type_): _description_
-        training (bool, optional): _description_. Defaults to True.
-
-    Returns:
-        _type_: _description_
+    """
     """
     # Extract parameters and load processing_parameters config dictionary
     if not processing_parameters: # We have already the processing params!

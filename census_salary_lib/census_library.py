@@ -34,30 +34,6 @@ logging.basicConfig(
     format='%(name)s - %(asctime)s - %(levelname)s - train_model - %(message)s') # add function/module name for tracing
 logger = logging.getLogger()
 
-# Add the necessary imports for the starter code.
-
-# Add code to load in the data.
-
-# Optional enhancement, use K-fold cross validation instead of a train-test split.
-train, test = train_test_split(data, test_size=0.20)
-
-cat_features = [
-    "workclass",
-    "education",
-    "marital-status",
-    "occupation",
-    "relationship",
-    "race",
-    "sex",
-    "native-country",
-]
-X_train, y_train, encoder, lb = process_data(
-    train, categorical_features=cat_features, label="salary", training=True
-)
-
-# Process the test data with the process_data function.
-
-# Train and save a model.
 def run_setup(config_filename='config.yaml', config=None):
     """_summary_
 
@@ -150,27 +126,53 @@ def run_processing(df, config, training=True, processing_parameters=None):
 
     return X_transformed, y_transformed, processing_parameters
 
-def run_training():
+def train_pipeline(config_filename='config.yaml'):
 
     # Load and clean dataset + config dictionary
-    df_train, df_test, config = run_setup(config_filename='config.yaml', config=None)
+    df_train, df_test, config = run_setup(config_filename=config_filename, config=None)
     
-    # Process dataset
-    X_transformed, y_transformed, processing_parameters = run_processing(df_train,
-                                                                         config,
-                                                                         training=True)
-
+    # Process dataset: train & test splits
+    X_train, y_train, processing_parameters = run_processing(df_train,
+                                                             config,
+                                                             training=True,
+                                                             processing_parameters=None)
+    
+    X_test, y_test, processing_parameters = run_processing(df_test,
+                                                           config,
+                                                           training=False,
+                                                           processing_parameters=processing_parameters)
     # Training
-    
+    config_model = config['random_forest_parameters']
+    config_grid = config['random_forest_grid_search']
+    model, best_params, best_score = train_model(X_train, y_train, config_model, config_grid)
+
+    # Persist pipeline
+    pickle.dump(processing_parameters, open(config['processing_artifact'],'wb')) # wb: write bytes
+    pickle.dump(model, open(config['model_artifact'],'wb')) # wb: write bytes
+
     # Evaluation
+    pred, prob = inference(model, X_test, compute_probabilities=True)
+    precision, recall, fbeta, roc_auc = compute_model_metrics(y_test, pred, prob)
+    
+    # Persist metrics
+    test_scores = (precision, recall, fbeta, roc_auc)
 
-    return model, processing_parameters
+    return model, processing_parameters, config, test_scores
 
-def run_evaluation():
-    pass
-
-def load_pipeline():
-    pass
+def load_pipeline(config_filename='config.yaml'):
+    
+    # Load configuration dictionary, since it's not passed
+    config = dict()
+    try:
+        with open(config_filename) as f: # 'config.yaml'
+            config = yaml.safe_load(f)
+    except FileNotFoundError as e:
+        logger.error("Configuration file not found: %s", config_filename)
+    
+    processing_parameters = pickle.load(open(config['processing_artifact'],'rb')) # rb: read bytes
+    model = pickle.load(open(config['model_artifact'],'rb')) # rb: read bytes
+    
+    return model, processing_parameters, config
 
 def predict(X, model, processing_parameters):
     

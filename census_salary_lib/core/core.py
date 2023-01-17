@@ -167,7 +167,9 @@ def load_validate_config(
     config = dict()
     try:
         with open(config_filename) as f: # 'config.yaml'
-            config = Config(**yaml.safe_load(f))
+            config = yaml.safe_load(f)
+            # Convert dictionary to Config class to validate it
+            _ = Config(**config)
     except FileNotFoundError as e:
         logger.error("Configuration YAML not found: %s.", config_filename)
     except ValidationError as e:
@@ -181,7 +183,9 @@ def load_validate_processing_parameters(
     processing_parameters = dict()
     try:
         with open(processing_artifact, 'rb') as f: # 'exported_artifacts/processing_parameters.pickle'
-            processing_parameters = ProcessingParameters(**pickle.load(f))
+            processing_parameters = pickle.load(f)
+            # Convert dictionary to ProcessingParameters class to validate it
+            _ = ProcessingParameters(**processing_parameters)
     except FileNotFoundError as e:
         logger.error("Processing parameters artifact/pickle not found: %s.", processing_artifact)
     except ValidationError as e:
@@ -195,6 +199,7 @@ def load_validate_model(
     try:
         with open(model_artifact, 'rb') as f: # 'exported_artifacts/model.pickle'
             model = pickle.load(f)
+        # Check that the loaded model is a RandomForestClassifier to validate it
         assert isinstance(model, RandomForestClassifier)
     except FileNotFoundError as e:
         logger.error("Model artifact/pickle not found: %s.", model_artifact)

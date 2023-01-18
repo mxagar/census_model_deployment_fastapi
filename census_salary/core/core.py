@@ -15,14 +15,14 @@ from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import LabelBinarizer
 from sklearn.ensemble import RandomForestClassifier
 
-from census_salary_lib.data.dataset import get_data
+from census_salary.data.dataset import get_data
 
 # Logging configuration
 logging.basicConfig(
     filename='./logs/census_pipeline.log', # filename, where it's dumped
     level=logging.INFO, # minimum level I log
     filemode='a', # append
-    format='%(name)s - %(asctime)s - %(levelname)s - core - %(message)s') # add function/module name for tracing
+    format='%(name)s - %(asctime)s - %(levelname)s - %(message)s') # add function/module name for tracing
 logger = logging.getLogger()
 
 class ProcessingParameters(BaseModel):
@@ -38,6 +38,9 @@ class ProcessingParameters(BaseModel):
     # categorical: SimpleImputer, OneHotEncoder
     feature_processor: ColumnTransformer
     target_processor: LabelBinarizer
+    
+    class Config:
+        arbitrary_types_allowed = True
 
 class ModelConfig(BaseModel):
     """
@@ -53,7 +56,6 @@ class ModelConfig(BaseModel):
     max_features: str
     max_leaf_nodes: None # null
     min_impurity_decrease: float
-    min_impurity_split: None # null
     bootstrap: bool
     oob_score: bool
     n_jobs: None # null
@@ -73,7 +75,7 @@ class TrainingConfig(BaseModel):
     cv: int
     scoring: str
 
-class Config(BaseModel):
+class GeneralConfig(BaseModel):
     """
     General configuration file.
     All configuration relevant to model
@@ -165,14 +167,15 @@ def validate_data(df: pd.DataFrame) -> Tuple[pd.DataFrame, Optional[dict]]:
     # Rename columns
     # - remove preceding blank space: ' education' -> 'education', etc.
     # - replace - with _: 'education-num' -> 'education_num', etc.
-    df_validated = df.copy()
-    df_validated = df_validated.rename(
+    #df_validated = df.copy()
+    #data = df.copy()
+    df = df.rename(
         columns={col_name: col_name.replace(' ', '') for col_name in df.columns})
-    df_validated = df_validated.rename(
+    df = df.rename(
         columns={col_name: col_name.replace('-', '_') for col_name in df.columns})
 
     # Drop duplicates
-    df_validated = df_validated.drop_duplicates().reset_index(drop=True)
+    df_validated = df.drop_duplicates().reset_index(drop=True)
     
     # Other checks we could do:
     # - convert types: df_validated[col] = df_validated[col].astype("O")
@@ -191,10 +194,10 @@ def validate_data(df: pd.DataFrame) -> Tuple[pd.DataFrame, Optional[dict]]:
     return df_validated, errors
 
 def load_validate_config(
-    config_filename: str = "config.yaml") -> Config:
+    config_filename: str = "config.yaml") -> dict:
     """Loads and validates general configuration YAML.
     Validation occurs by converting the loaded
-    dictionary into the Config class/object defined in core.py.
+    dictionary into the GeneralConfig class/object defined in core.py.
     
     Inputs
     ------
@@ -211,7 +214,7 @@ def load_validate_config(
         with open(config_filename) as f: # 'config.yaml'
             config = yaml.safe_load(f)
             # Convert dictionary to Config class to validate it
-            _ = Config(**config)
+            _ = GeneralConfig(**config)
     except FileNotFoundError as e:
         logger.error("Configuration YAML not found: %s.", config_filename)
     except ValidationError as e:
@@ -220,7 +223,7 @@ def load_validate_config(
     return config
 
 def load_validate_processing_parameters(
-    processing_artifact: str = "./exported_artifacts/processing_parameters.pickle") -> ProcessingParameters:
+    processing_artifact: str = "./exported_artifacts/processing_parameters.pickle") -> dict:
     """Loads and validates the processing parameters.
     Validation occurs by converting the loaded
     dictionary into the ProcessingParameters class/object defined in core.py.

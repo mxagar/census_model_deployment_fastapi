@@ -27,7 +27,7 @@ logging.basicConfig(
     filename='./logs/census_pipeline.log', # filename, where it's dumped
     level=logging.INFO, # minimum level I log
     filemode='a', # append
-    format='%(name)s - %(asctime)s - %(levelname)s - data.process_data - %(message)s') # add function/module name for tracing
+    format='%(name)s - %(asctime)s - %(levelname)s - %(message)s') # add function/module name for tracing
 logger = logging.getLogger()
 
 def process_data(
@@ -101,24 +101,18 @@ def process_data(
     # Collection of all feature columns
     features = numerical_features + categorical_features
 
-    if label is not None:
+    try:
+        X = df[features]
+        y = np.array([])
+    except KeyError as e:
+        logger.error("A column is missing in the dataset.")
+    
+    #if training or label:
+    if label:
         try:
             y = df[label]
-            #X = df.drop([label], axis=1)
-            X = df[features]
         except KeyError as e:
-            logger.error("A column is missing in the dataset.")
-    else:
-        try:
-            y = np.array([])
-            #X = df
-            X = df[features]
-        except KeyError as e:
-            logger.error("A column is missing in the dataset.")
-        try:
-            assert not training
-        except AssertionError as e:
-            logger.error("In training mode, the target/label must be provided.")
+            logger.error("The target column is missing in the dataset.")
 
     #X_categorical = X[categorical_features].values
     #X_numerical = X[numerical_features].values

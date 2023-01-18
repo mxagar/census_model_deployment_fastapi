@@ -26,7 +26,7 @@ logging.basicConfig(
     filename='./logs/census_pipeline.log', # filename, where it's dumped
     level=logging.INFO, # minimum level I log
     filemode='a', # append
-    format='%(name)s - %(asctime)s - %(levelname)s - model - %(message)s') # add function/module name for tracing
+    format='%(name)s - %(asctime)s - %(levelname)s - %(message)s') # add function/module name for tracing
 logger = logging.getLogger()
 
 def train_model(X_train, y_train, config_model, config_grid):
@@ -86,9 +86,9 @@ def train_model(X_train, y_train, config_model, config_grid):
     best_score = search.best_score_
 
     score_string = config_grid['scoring'] + " = " + str(best_score)
-    logger.info("Best score: ", %s, score_string)
+    logger.info("Best score: %s", score_string)
     params_string = str(best_params)
-    logger.info("Best hyperparameters: ", %s, params_string)
+    logger.info("Best hyperparameters: %s", params_string)
 
     return model, best_params, best_score
 

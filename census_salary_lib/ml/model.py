@@ -149,3 +149,10 @@ def inference(model, X, compute_probabilities=False):
         probs = model.predict_proba(X)[:, 1]
 
     return preds, probs
+
+def decode_labels(pred, processing_parameters):
+    
+    target_processor = processing_parameters['target_processor']
+    pred_decoded = target_processor.inverse_transform(pred)
+    
+    return pred_decoded

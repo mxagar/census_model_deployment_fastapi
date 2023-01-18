@@ -1,7 +1,7 @@
 from .core import (ProcessingParameters,
                    ModelConfig,
                    TrainingConfig,
-                   Config,
+                   GeneralConfig,
                    DataRow,
                    MultipleDataRows,
                    load_data,

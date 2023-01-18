@@ -109,10 +109,10 @@ def process_data(
     
     #if training or label:
     if label:
-        try:
+        if label in df.columns:
             y = df[label]
-        except KeyError as e:
-            logger.error("The target column is missing in the dataset.")
+        else:
+            logger.info("No target column taken from the dataset.")
 
     #X_categorical = X[categorical_features].values
     #X_numerical = X[numerical_features].values

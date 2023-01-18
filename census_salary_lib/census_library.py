@@ -8,6 +8,39 @@ The following steps are carried out:
 - Data processing
 - Model training with hyper parameter tuning
 - Model and processing pipeline persisting
+   
+Usage example: 
+
+    import census_salary_lib as cs
+
+    # Train, is not trained yet
+    model, processing_parameters, config = cs.train_pipeline(config_filename='config.yaml')
+
+    # Load pipeline, if training performed in another execution/session
+    model, processing_parameters, config = cs.load_pipeline(config_filename='config.yaml')
+    
+    # Get and check the data.
+    # Example: if we employ the dataset used for training,
+    # we need to read/load it and validate it:
+    # remove duplicates, rename columns and check fields with Pydantic.
+    # Then, we can (optionally) drop the "salary" column (target, to be predicted).
+    # Notes:
+    # 1. validate_data() is originally defined for training purposes
+    # and it expects the features and target as in the original dataset form.
+    # Additionally, vadalidate_data() expects the target column. 
+    # 2. The X dataframe must have the numerical and categorical columns
+    # as defined in config.yaml or core.py
+    df = pd.read_csv('./data/census.csv') # original training dataset: features & target
+    df = cs.validate_data(df=df) # columns renamed, duplicates droped, etc.
+    X = df.drop("salary", axis=1) # optional
+    X = X.iloc[:100, :] # we take a sample
+    
+    # Predict salary (values already decoded)
+    # This runs the complete pipeline: processing + model
+    # The X dataframe must have the numerical and categorical columns
+    # as defined in config.yaml or core.py
+    pred = cs.predict(X, model, processing_parameters)
+
 
 Author: Mikel Sagardia
 Date: 2023-01-16
@@ -24,18 +57,16 @@ from sklearn.model_selection import train_test_split
 
 from .ml.model import (train_model,
                        compute_model_metrics,
-                       inference)
+                       inference,
+                       decode_labels)
 from .ml.data import process_data
-from .census_library import (run_setup,
-                          run_processing,
-                          train_pipeline,
-                          load_pipeline,
-                          predict)
 from .core.core import (load_data,
                         validate_data,
                         load_validate_config,
                         load_validate_processing_parameters,
-                        load_validate_model)
+                        load_validate_model,
+                        save_processing_parameters,
+                        save_model)
 
 # Logging configuration
 logging.basicConfig(
@@ -115,9 +146,6 @@ def run_processing(df, config, training=True, processing_parameters=None):
 
     return X_transformed, y_transformed, processing_parameters
 
-def create_evaluation_report():
-    pass
-
 def train_pipeline(config_filename='config.yaml'):
 
     # Load and clean dataset + config dictionary
@@ -138,9 +166,11 @@ def train_pipeline(config_filename='config.yaml'):
     config_grid = config['random_forest_grid_search']
     model, best_params, best_score = train_model(X_train, y_train, config_model, config_grid)
 
-    # Persist pipeline
-    pickle.dump(processing_parameters, open(config['processing_artifact'],'wb')) # wb: write bytes
-    pickle.dump(model, open(config['model_artifact'],'wb')) # wb: write bytes
+    # Persist pipeline: model + processing transformers
+    save_processing_parameters(processing_parameters=processing_parameters,
+                               processing_artifact=config['processing_artifact'])
+    save_model(model=model, 
+               model_artifact=config['model_artifact'])
 
     # Evaluation
     pred, prob = inference(model, X_test, compute_probabilities=True)
@@ -167,17 +197,12 @@ def train_pipeline(config_filename='config.yaml'):
 
 def load_pipeline(config_filename='config.yaml'):
     
-    # Load configuration dictionary, since it's not passed
-    config = dict()
-    try:
-        with open(config_filename) as f: # 'config.yaml'
-            config = yaml.safe_load(f)
-    except FileNotFoundError as e:
-        logger.error("Configuration file not found: %s", config_filename)
-    
-    processing_parameters = pickle.load(open(config['processing_artifact'],'rb')) # rb: read bytes
-    model = pickle.load(open(config['model_artifact'],'rb')) # rb: read bytes
-    
+    config = load_validate_config(config_filename=config_filename)
+    processing_parameters = load_validate_processing_parameters(processing_artifact=config['processing_artifact'])
+    model = load_validate_model(model_artifact=config['model_artifact'])
+
+    logger.info("Pipeline (model, processing, config) correctly loaded and validated.")
+        
     return model, processing_parameters, config
 
 def predict(X, model, processing_parameters):
@@ -190,29 +215,11 @@ def predict(X, model, processing_parameters):
     # Inference
     pred, _ = inference(model, X_trans, compute_probabilities=False)
     
-    return pred
+    pred_decoded = decode_labels(pred, processing_parameters)
+    
+    return pred_decoded
 
 if __name__ == "__main__":
     
     model, processing_parameters, config = train_pipeline(config_filename='config.yaml')
     
-    """
-    import census_salary_lib as cs
-
-    # Train, is not trained yet
-    model, processing_parameters, config = cs.train_pipeline(config_filename='config.yaml')
-
-    # Load pipeline, if training performed in another execution/session
-    model, processing_parameters, config = cs.load_pipeline(config_filename='config.yaml')
-    
-    # Get data: 
-    df = pd.read_csv('./data/census.csv')
-    df = df.rename(columns={col_name: col_name.replace(' ', '') for col_name in df.columns})
-    X = df.iloc[:100, :]
-    
-    # Predict salary
-    pred = cs.predict(X, model, processing_parameters)
-    # Decode
-    pred_decoded = cs.decode_labels(pred, processing_parameters)
-    
-    """

@@ -1,6 +1,7 @@
 from .ml.model import (train_model,
                        compute_model_metrics,
-                       inference)
+                       inference,
+                       decode_labels)
 from .ml.data import process_data
 from .census_library import (run_setup,
                           run_processing,
@@ -18,4 +19,6 @@ from .core.core import (ProcessingParameters,
                         validate_data,
                         load_validate_config,
                         load_validate_processing_parameters,
-                        load_validate_model)
+                        load_validate_model,
+                        save_processing_parameters,
+                        save_model)

@@ -8,4 +8,6 @@ from .core import (ProcessingParameters,
                    validate_data,
                    load_validate_config,
                    load_validate_processing_parameters,
-                   load_validate_model)
+                   load_validate_model,
+                   save_processing_parameters,
+                   save_model)

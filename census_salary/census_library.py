@@ -11,10 +11,11 @@ The following steps are carried out:
    
 Usage example: 
 
-    import census_salary_lib as cs
+    import pandas as pd
+    import census_salary as cs
 
     # Train, is not trained yet
-    model, processing_parameters, config = cs.train_pipeline(config_filename='config.yaml')
+    model, processing_parameters, config, test_scores = cs.train_pipeline(config_filename='config.yaml')
 
     # Load pipeline, if training performed in another execution/session
     model, processing_parameters, config = cs.load_pipeline(config_filename='config.yaml')
@@ -27,11 +28,11 @@ Usage example:
     # Notes:
     # 1. validate_data() is originally defined for training purposes
     # and it expects the features and target as in the original dataset form.
-    # Additionally, vadalidate_data() expects the target column. 
+    # Additionally, validate_data() expects the target column. 
     # 2. The X dataframe must have the numerical and categorical columns
-    # as defined in config.yaml or core.py
+    # as defined in config.yaml or core.py (with modified names)
     df = pd.read_csv('./data/census.csv') # original training dataset: features & target
-    df = cs.validate_data(df=df) # columns renamed, duplicates droped, etc.
+    df, _ = cs.validate_data(df=df) # columns renamed, duplicates dropped, etc.
     X = df.drop("salary", axis=1) # optional
     X = X.iloc[:100, :] # we take a sample
     
@@ -39,7 +40,8 @@ Usage example:
     # This runs the complete pipeline: processing + model
     # The X dataframe must have the numerical and categorical columns
     # as defined in config.yaml or core.py
-    pred = cs.predict(X, model, processing_parameters)
+    print("Prediction:")
+    print(pred)
 
 
 Author: Mikel Sagardia
@@ -73,7 +75,7 @@ logging.basicConfig(
     filename='./logs/census_pipeline.log', # filename, where it's dumped
     level=logging.INFO, # minimum level I log
     filemode='a', # append
-    format='%(name)s - %(asctime)s - %(levelname)s - train_model - %(message)s') # add function/module name for tracing
+    format='%(name)s - %(asctime)s - %(levelname)s - %(message)s') # add function/module name for tracing
 logger = logging.getLogger()
 
 def run_setup(config_filename='config.yaml', config=None):
@@ -90,14 +92,15 @@ def run_setup(config_filename='config.yaml', config=None):
     logger.info("Dataset correctly loaded.")
 
     # Validate dataset
-    df, _ = validate_data(df=df)    
+    df_validated, _ = validate_data(df=df)
     logger.info("Dataset correctly validated: columns are OK, some renamed, duplicated dropped, etc.")
 
     # Segregate
-    df_train, df_test = train_test_split(df,
+    target = config['target'] # 'salary'
+    df_train, df_test = train_test_split(df_validated,
                                          test_size=config['test_size'], # test_size = 0.20
                                          random_state=config['random_seed'], # 42
-                                         stratify=y) # if we want to keep class ratios in splits
+                                         stratify=df_validated[target]) # if we want to keep class ratios in splits
     logger.info("Dataset correctly segregated into train/test splits.")
     
     return df_train, df_test, config
@@ -105,8 +108,12 @@ def run_setup(config_filename='config.yaml', config=None):
 def run_processing(df, config, training=True, processing_parameters=None):
     """
     """
-    # Extract parameters and load processing_parameters config dictionary
-    if not processing_parameters: # We have already the processing params!
+    # Extract parameters and load processing_parameters dictionary
+    categorical_features = []
+    numerical_features = []
+    label = None
+    if processing_parameters: # We have already the processing params!
+        # Extract parameters from processing_parameters
         categorical_features = processing_parameters['categorical_features']
         numerical_features = processing_parameters['numerical_features']
         label = processing_parameters['target']
@@ -115,17 +122,15 @@ def run_processing(df, config, training=True, processing_parameters=None):
             assert config
         except AssertionError as e:
             logger.error("Configuration dict cannot be None if processing_parameters is None.")
+        # Extract parameters from config
         categorical_features = config['features']['categorical']
         numerical_features = config['features']['numerical']
         label = config['target']
-        processing_artifact = config['processing_artifact']
-        #processing_parameters = None
-        if not training: # PREDICTION
+        if not training: # PREDICTION -> processing_parameters must be there
             label = None
-            try:
-                processing_parameters = pickle.load(open(processing_artifact,'rb')) # rb: read bytes
-            except FileNotFoundError as e:
-                logger.error("Processing parameters file not found: %s", processing_artifact)
+            processing_parameters = load_validate_processing_parameters(
+                processing_artifact=config['processing_artifact'])
+
     logger.info("Processing parameters correctly extracted.")
 
     # Process
@@ -141,17 +146,23 @@ def run_processing(df, config, training=True, processing_parameters=None):
 
     # Persist
     if training:
-        pickle.dump(processing_parameters, open(processing_artifact,'wb')) # wb: write bytes
+        save_processing_parameters(processing_parameters=processing_parameters,
+                                   processing_artifact=config['processing_artifact'])
     logger.info("Processing parameters correctly persisted.")
 
     return X_transformed, y_transformed, processing_parameters
 
 def train_pipeline(config_filename='config.yaml'):
 
+    print("TRAINING")
+    logger.info("Training starts.")
+
     # Load and clean dataset + config dictionary
+    print("Running setup...")
     df_train, df_test, config = run_setup(config_filename=config_filename, config=None)
     
     # Process dataset: train & test splits
+    print("Running data processing...")
     X_train, y_train, processing_parameters = run_processing(df_train,
                                                              config,
                                                              training=True,
@@ -161,28 +172,37 @@ def train_pipeline(config_filename='config.yaml'):
                                                            config,
                                                            training=False,
                                                            processing_parameters=processing_parameters)
+    
     # Training
+    print("Running model fit...")
     config_model = config['random_forest_parameters']
     config_grid = config['random_forest_grid_search']
     model, best_params, best_score = train_model(X_train, y_train, config_model, config_grid)
 
     # Persist pipeline: model + processing transformers
+    print("Persisting pipeline: model + processing...")
     save_processing_parameters(processing_parameters=processing_parameters,
                                processing_artifact=config['processing_artifact'])
     save_model(model=model, 
                model_artifact=config['model_artifact'])
 
     # Evaluation
+    print("Running evaluation with test split...")
     pred, prob = inference(model, X_test, compute_probabilities=True)
     precision, recall, fbeta, roc_auc = compute_model_metrics(y_test, pred, prob)
     
     # Persist metrics
-    test_scores = (precision, recall, fbeta, roc_auc)
+    test_scores = {
+        'precision': precision,
+        'recall': recall,
+        'fbeta': fbeta, 
+        'roc_auc': roc_auc
+        }
     report = []
     report.append(f'Training and evaluation report, {datetime.now()}')
     report.append(' ')
     report.append('# TRAINING')
-    report.append(f'Best score - {} = {best_score}')
+    report.append(f"Best score - {config_grid['scoring']} = {best_score}")
     report.append(f'Best model hyperparameters: {str(best_params)}')
     report.append(' ')
     report.append('# EVALUATION (test split)')
@@ -193,10 +213,13 @@ def train_pipeline(config_filename='config.yaml'):
     with open(config['evaluation_artifact'], 'w') as f:
         f.write('\n'.join(report))
 
+    print("Training successfully finished! Check exported artifacts.\n")
+
     return model, processing_parameters, config, test_scores
 
 def load_pipeline(config_filename='config.yaml'):
     
+    print("Loading pipeline: model + processing parameters + config...")
     config = load_validate_config(config_filename=config_filename)
     processing_parameters = load_validate_processing_parameters(processing_artifact=config['processing_artifact'])
     model = load_validate_model(model_artifact=config['model_artifact'])
@@ -221,5 +244,5 @@ def predict(X, model, processing_parameters):
 
 if __name__ == "__main__":
     
-    model, processing_parameters, config = train_pipeline(config_filename='config.yaml')
+    model, processing_parameters, config, test_scores = train_pipeline(config_filename='config.yaml')
     

@@ -6,19 +6,19 @@ features:
   numerical:
     - "age"
     - "fnlgt"
-    - "education-num"
-    - "capital-gain"
-    - "capital-loss"
-    - "hours-per-week"
+    - "education_num"
+    - "capital_gain"
+    - "capital_loss"
+    - "hours_per_week"
   categorical:
     - "workclass"
     - "education"
-    - "marital-status"
+    - "marital_status"
     - "occupation"
     - "relationship"
     - "race"
     - "sex"
-    - "native-country"
+    - "native_country"
 random_forest_parameters:
   # This section is passed to the random forest model
   # as a dictionary of parameters, thus names must match with
@@ -39,7 +39,6 @@ random_forest_parameters:
   max_features: 'auto'
   max_leaf_nodes: null
   min_impurity_decrease: 0.0
-  min_impurity_split: null
   bootstrap: true
   oob_score: false
   n_jobs: null

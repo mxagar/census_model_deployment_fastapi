@@ -1,3 +1,7 @@
+"""_summary_
+
+"""
+
 import logging
 from pydantic import BaseModel, ValidationError
 from typing import Dict, List, Optional, Tuple # Sequence
@@ -26,7 +30,6 @@ class ProcessingParameters(BaseModel):
     Processing parameters for the data.
     Pipeline is included.
     """
-
     features: List[str]
     target: str
     categorical_features: List[str]
@@ -41,7 +44,6 @@ class ModelConfig(BaseModel):
     Model configuration:
     default model parameter values.
     """
-    
     n_estimators: int
     criterion: str
     max_depth: int
@@ -67,7 +69,6 @@ class TrainingConfig(BaseModel):
     Training configuration, i.e.,
     hyperparameter tuning definition with grid search.
     """
-    
     hyperparameters: Dict
     cv: int
     scoring: str
@@ -78,7 +79,6 @@ class Config(BaseModel):
     All configuration relevant to model
     training and data processing (i.e., feature engineering, etc.).
     """
-    
     data_path: str
     test_size: float
     random_seed: int
@@ -94,7 +94,6 @@ class DataRow(BaseModel):
     """
     Single dataset row.
     """
-    
     age: int
     workclass: str
     fnlgt: int
@@ -120,7 +119,19 @@ class MultipleDataRows(BaseModel):
     inputs: List[DataRow]
 
 def load_data(data_path: str = "./data/census.csv") -> pd.DataFrame:
+    """Gets and loads dataset as a dataframe.
     
+    Inputs
+    ------
+    data_path : str
+        String of to the local dataset path.
+        Default: "./data/census.csv".
+        
+    Returns
+    -------
+    df: pd.DataFrame
+        Loaded dataset.
+    """
     # Download dataset to local file directory
     get_data(destination_file=data_path)
     
@@ -132,7 +143,25 @@ def load_data(data_path: str = "./data/census.csv") -> pd.DataFrame:
     return df
 
 def validate_data(df: pd.DataFrame) -> Tuple[pd.DataFrame, Optional[dict]]:
-    
+    """Cleans and validates training dataset.
+    That implies:
+    - Renaming columns: remove blank spaces and replace '-' with '_'
+    - Dropping duplicates.
+    Validation occurs by converting the loaded
+    dictionary into the MultipleDataRows class/object defined in core.py.
+        
+    Inputs
+    ------
+    df : pd.DataFrame
+        String of to the local dataset path.
+        
+    Returns
+    -------
+    df_validated: pd.DataFrame
+        Validated dataset
+    errors: dict
+        Validation error, if there was one; otherwise None is returned.
+    """
     # Rename columns
     # - remove preceding blank space: ' education' -> 'education', etc.
     # - replace - with _: 'education-num' -> 'education_num', etc.
@@ -163,7 +192,20 @@ def validate_data(df: pd.DataFrame) -> Tuple[pd.DataFrame, Optional[dict]]:
 
 def load_validate_config(
     config_filename: str = "config.yaml") -> Config:
+    """Loads and validates general configuration YAML.
+    Validation occurs by converting the loaded
+    dictionary into the Config class/object defined in core.py.
     
+    Inputs
+    ------
+    config_filename : str
+        String of to the local config file path.
+        
+    Returns
+    -------
+    config: dict
+        Validated configuration dictionary.
+    """
     config = dict()
     try:
         with open(config_filename) as f: # 'config.yaml'
@@ -179,7 +221,20 @@ def load_validate_config(
 
 def load_validate_processing_parameters(
     processing_artifact: str = "./exported_artifacts/processing_parameters.pickle") -> ProcessingParameters:
-
+    """Loads and validates the processing parameters.
+    Validation occurs by converting the loaded
+    dictionary into the ProcessingParameters class/object defined in core.py.
+    
+    Inputs
+    ------
+    processing_artifact : str
+        String of to the local processing parameters file path.
+        
+    Returns
+    -------
+    processing_parameters: dict
+        Validated processing parameters dictionary.
+    """
     processing_parameters = dict()
     try:
         with open(processing_artifact, 'rb') as f: # 'exported_artifacts/processing_parameters.pickle'
@@ -195,7 +250,20 @@ def load_validate_processing_parameters(
 
 def load_validate_model(
     model_artifact: str = "./exported_artifacts/model.pickle") -> RandomForestClassifier:
+    """Loads and validates the (trained) model.
+    Validation occurs by checking that the loaded
+    object type is RandomForestClassifier.
     
+    Inputs
+    ------
+    model_artifact : str
+        String of to the local model file path.
+        
+    Returns
+    -------
+    model: RandomForestClassifier
+        Validated model.
+    """
     try:
         with open(model_artifact, 'rb') as f: # 'exported_artifacts/model.pickle'
             model = pickle.load(f)
@@ -207,3 +275,16 @@ def load_validate_model(
         logger.error("Model artifact/pickle is not a RandomForestClassifier.")        
     
     return model
+
+def save_processing_parameters(processing_parameters: dict,
+                               processing_artifact: str = "./exported_artifacts/processing_parameters.pickle") -> None:
+    """
+    """
+    pickle.dump(processing_parameters, open(processing_artifact,'wb')) # wb: write bytes
+
+def save_model(model: RandomForestClassifier, 
+               model_artifact: str = "./exported_artifacts/model.pickle") -> None:
+    """
+    """
+    pickle.dump(model, open(model_artifact,'wb')) # wb: write bytes
+

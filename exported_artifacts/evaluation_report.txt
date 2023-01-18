@@ -1,0 +1,11 @@
+Training and evaluation report, 2023-01-18 14:33:27.364182
+ 
+# TRAINING
+Best score - roc_auc = 0.9103728001703995
+Best model hyperparameters: {'criterion': 'entropy', 'max_depth': 15, 'max_features': 'sqrt', 'n_estimators': 200}
+ 
+# EVALUATION (test split)
+Precision = 0.5711906744379683
+Recall = 0.875
+F1 = 0.691183879093199
+ROC-AUC = 0.918021681091465

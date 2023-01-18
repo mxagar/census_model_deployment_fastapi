@@ -12,7 +12,7 @@ from .data.dataset import get_data
 from .core.core import (ProcessingParameters,
                         ModelConfig,
                         TrainingConfig,
-                        Config,
+                        GeneralConfig,
                         DataRow,
                         MultipleDataRows,
                         load_data,

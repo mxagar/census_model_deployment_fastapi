@@ -21,6 +21,7 @@ The focus of this project doesn't lie so much on the data processing, but on the
   - [How to Use This Project](#how-to-use-this-project)
     - [Installing Dependencies for Custom Environments](#installing-dependencies-for-custom-environments)
   - [Notes on Theory](#notes-on-theory)
+    - [Continuous Integration](#continuous-integration)
   - [Notes on the Implemented Analysis and Modeling](#notes-on-the-implemented-analysis-and-modeling)
     - [Summary of Contents](#summary-of-contents)
   - [Results and Conclusions](#results-and-conclusions)
@@ -66,6 +67,11 @@ List of most important dependencies:
 - B
 
 ## Notes on Theory
+
+### Continuous Integration
+
+- Github Actions; flake8, pytest, workflow (Python App)
+
 
 ## Notes on the Implemented Analysis and Modeling
 

@@ -1,5 +1,10 @@
-"""_summary_
+"""This module contains 
+general data structure definitions and their respective
+loading, validation and saving functions.
+In other words, it is a data manager for all structures used in the library.
 
+Author: Mikel Sagardia
+Date: 2023-01-16
 """
 
 import logging
@@ -88,9 +93,11 @@ class GeneralConfig(BaseModel):
     features: Dict[str, List[str]]
     random_forest_parameters: ModelConfig
     random_forest_grid_search: TrainingConfig
+    slicing_min_data_points: int
     model_artifact: str
     processing_artifact: str
     evaluation_artifact: str
+    slicing_artifact: str
 
 class DataRow(BaseModel):
     """
@@ -281,13 +288,38 @@ def load_validate_model(
 
 def save_processing_parameters(processing_parameters: dict,
                                processing_artifact: str = "./exported_artifacts/processing_parameters.pickle") -> None:
-    """
+    """Persists the dictionary which contains
+    the processing parameters into a serialized
+    pickle file.
+    
+    Inputs
+    ------
+    processing_parameters : dict
+        Dictionary with the processing parameters.
+        It should be equivalent to the class ProcessingParameters.
+    processing_artifact: str (default = "./exported_artifacts/processing_parameters.pickle")
+        File path to persist the dictionary.
+        
+    Returns
+    -------
+    None
     """
     pickle.dump(processing_parameters, open(processing_artifact,'wb')) # wb: write bytes
 
 def save_model(model: RandomForestClassifier, 
                model_artifact: str = "./exported_artifacts/model.pickle") -> None:
-    """
+    """Persists the model object into a serialized pickle file.
+    
+    Inputs
+    ------
+    model : RandomForestClassifier
+        The (trained) model.
+    model_artifact: str (default = "./exported_artifacts/model.pickle")
+        File path to persist the model.
+        
+    Returns
+    -------
+    None
     """
     pickle.dump(model, open(model_artifact,'wb')) # wb: write bytes
 

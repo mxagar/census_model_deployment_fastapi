@@ -48,6 +48,7 @@ def train_model(X_train, y_train, config_model, config_grid):
     config_grid : dict
         Dictionary with configuration paramaters
         for the grid search, loaded from ROOT/config.yaml
+
     Returns
     -------
     model : sklearn model object (sklearn.ensemble.RandomForestClassifier)
@@ -104,25 +105,25 @@ def compute_model_metrics(y, preds, probs):
     preds : np.array
         Predicted labels, binarized.
     probs : np.array
-        Predicted probabilities, for ROC AUC computation.
+        Predicted probabilities.
         
     Returns
     -------
     precision : float
     recall : float
     fbeta : float
-    roc_auc : float
     """
     fbeta = fbeta_score(y, preds, beta=1, zero_division=1)
     precision = precision_score(y, preds, zero_division=1)
     recall = recall_score(y, preds, zero_division=1)
-    roc_auc = roc_auc_score(y, probs)
+    #roc_auc = roc_auc_score(y, probs)
     
-    return precision, recall, fbeta, roc_auc
+    #return precision, recall, fbeta, roc_auc
+    return precision, recall, fbeta
 
 
 def inference(model, X, compute_probabilities=False):
-    """ Run model inferences and return the predictions.
+    """Run model inferences and return the predictions.
 
     Inputs
     ------
@@ -134,6 +135,7 @@ def inference(model, X, compute_probabilities=False):
     compute_probabilities : bool
         Whether probabilities need to be returned
         in addition to labels/classes (default=False).
+
     Returns
     -------
     preds : np.array
@@ -151,7 +153,25 @@ def inference(model, X, compute_probabilities=False):
     return preds, probs
 
 def decode_labels(pred, processing_parameters):
-    
+    """Decode the labels to their original form.
+    The target_processor transformer contained in
+    processing_parameters is used to that end.
+
+    Inputs
+    ------
+    pred : np.array
+        Target array which contains prediction
+        outputs from the model.
+    processing_parameters : dict
+        Dictionary which contains the parameters
+        and the pipeline for data processing.
+
+    Returns
+    -------
+    preds : np.array
+        Prediction labels in the original dataset form.
+
+    """    
     target_processor = processing_parameters['target_processor']
     pred_decoded = target_processor.inverse_transform(pred)
     

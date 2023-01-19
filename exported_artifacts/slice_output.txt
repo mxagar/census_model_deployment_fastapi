@@ -1,7 +1,8 @@
-Data slicing report, 2023-01-19 13:02:04.389874
+Data slicing report, 2023-01-19 17:24:00.999706
 Numerical columns are sliced at the median (equal or above, below).
 Categorical columns are sliced at each category.
 F1 scores are shown for each slice.
+Minimum number of data points to compute slice score is defined in config: slicing_min_data_points.
  
 age
 	median: 37.0

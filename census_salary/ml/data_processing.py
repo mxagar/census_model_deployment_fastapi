@@ -4,7 +4,7 @@ related to the data processing of the census dataset.
 In a single function, the complete dataset
 used for training is ingested.
 Then, its columns are processed and returned
-as a a (X, y) pair.
+as a (X, y) pair.
 Additionally, an object which contains the
 processing parameters is returned.
 
@@ -72,7 +72,9 @@ def process_data(
     training : bool
         Indicator if training mode or inference/validation mode (default=True).
     processing_parameters : dict
-        Dictionary generated when training. It thas the following key-values:
+        Dictionary generated when training. It is equivalent to the
+        class ProcessingParameters in core.py.
+        It thas the following key-values:
         - features : list of all features used/processed
         - target : str of target/label column
         - categorical_features: list of all categorical features used/processed
@@ -82,7 +84,7 @@ def process_data(
             SimpleImputer, OneHotEncoder, StandardScaler
             depending on the type of column (categorical, numerical)
         - target_processor : trained LabelBinarizer
-        When training=Tru or processing_parameters=None
+        When training=True or processing_parameters=None
         the dictionary is re-generated and returned.
 
     Returns

@@ -49,10 +49,10 @@ Date: 2023-01-16
 # Script to train machine learning model.
 from datetime import datetime
 import logging
-import pickle
-import yaml
-import numpy as np
-import pandas as pd
+#import pickle
+#import yaml
+#import numpy as np
+#import pandas as pd
 
 from sklearn.model_selection import train_test_split
 

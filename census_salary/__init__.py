@@ -2,9 +2,13 @@ from .ml.model import (train_model,
                        compute_model_metrics,
                        inference,
                        decode_labels)
-from .ml.data import process_data
+from .ml.data_processing import process_data
 from .census_library import (run_setup,
                           run_processing,
+                          run_evaluation,
+                          run_slicing,
+                          save_evaluation_report,
+                          save_slicing_report,
                           train_pipeline,
                           load_pipeline,
                           predict)

@@ -72,9 +72,10 @@ def numerical_features():
     return pytest.config_dict["features"]["numerical"]
 
 @pytest.fixture
-def num_features():
-    '''Number of final features.'''
-    return 14
+def num_transformed_features():
+    '''Number of final features, after the transformation/processing.'''
+    #return 14
+    return 108
 
 ## Functions
 

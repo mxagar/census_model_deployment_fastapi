@@ -65,7 +65,9 @@ random_forest_grid_search:
       - 10
       - 15
   cv: 3
-  scoring: 'roc_auc'
+  scoring: 'f1'
+slicing_min_data_points: 5
 model_artifact: "./exported_artifacts/model.pickle"
 processing_artifact: "./exported_artifacts/processing_parameters.pickle"
 evaluation_artifact: "./exported_artifacts/evaluation_report.txt"
+slicing_artifact: "./exported_artifacts/slice_output.txt"

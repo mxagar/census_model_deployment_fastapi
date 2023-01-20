@@ -21,8 +21,12 @@ The focus of this project doesn't lie so much on the data processing, but on the
   - [How to Use This Project](#how-to-use-this-project)
     - [Installing Dependencies for Custom Environments](#installing-dependencies-for-custom-environments)
   - [Notes on Theory](#notes-on-theory)
+    - [Model Card](#model-card)
     - [Continuous Integration](#continuous-integration)
-  - [Notes on the Implemented Analysis and Modeling](#notes-on-the-implemented-analysis-and-modeling)
+    - [FastAPI Application](#fastapi-application)
+    - [Deployment to Heroku](#deployment-to-heroku)
+    - [Docker Container](#docker-container)
+    - [Deployment to AWS EC2](#deployment-to-aws-ec2)
     - [Summary of Contents](#summary-of-contents)
   - [Results and Conclusions](#results-and-conclusions)
   - [Next Steps, Improvements](#next-steps-improvements)
@@ -67,6 +71,17 @@ List of most important dependencies:
 - B
 
 ## Notes on Theory
+
+### Model Card
+
+The model card, which contains a summary of the model properties, is in the co-located file [`ModelCard.md`](ModelCard.md).
+
+In there, the following topics are covered:
+
+- Dataset
+- Model: training and final performance
+- Evaluation metrics, data slicing
+- Bias and ethical issues (morel fairness)
 
 ### Continuous Integration
 
@@ -148,7 +163,13 @@ jobs:
         pytest tests
 ```
 
-## Notes on the Implemented Analysis and Modeling
+### FastAPI Application
+
+### Deployment to Heroku
+
+### Docker Container
+
+### Deployment to AWS EC2
 
 ### Summary of Contents
 

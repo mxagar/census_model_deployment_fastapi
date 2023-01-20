@@ -21,7 +21,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import (OneHotEncoder,
                                    StandardScaler,
                                    LabelBinarizer)
-from sklearn.pipeline import make_pipeline #, Pipeline
+from sklearn.pipeline import make_pipeline, Pipeline
 from sklearn.compose import ColumnTransformer
 
 # Logging configuration
@@ -82,6 +82,7 @@ def process_data(
         - target : str of target/label column
         - categorical_features: list of all categorical features used/processed
         - numerical_features: list of all numerical features used/processed
+        - final_feature_names: final list of feature names in the transformed X
         - feature_processor : trained feature processor composed of Pipeline objects
             embedded in a ColumnTransformer, which applies specific
             SimpleImputer, OneHotEncoder, StandardScaler
@@ -127,10 +128,16 @@ def process_data(
         ## -- 1. Features
         # Define processing for categorical columns
         # handle_unknown: label encoders need to be able to deal with unknown labels!
-        categorical_transformer = make_pipeline(
-            SimpleImputer(strategy="constant", fill_value=0),
-            OneHotEncoder(sparse_output=False, handle_unknown="ignore")
-        )
+        #categorical_transformer = make_pipeline(
+        #    SimpleImputer(strategy="constant", fill_value=0),
+        #    OneHotEncoder(sparse_output=False, handle_unknown="ignore")
+        #)
+        # We can use make_pipeline if we don't care about accessing steps later on
+        # but if we want to access steps, better to use Pipeline!
+        categorical_transformer = Pipeline(steps=[
+            ('imputer', SimpleImputer(strategy="constant", fill_value=0)),
+            ('onehot', OneHotEncoder(sparse_output=False, handle_unknown="ignore"))])
+        
         # Define processing for numerical columns
         numerical_transformer = make_pipeline(
             SimpleImputer(strategy="median"),
@@ -148,6 +155,16 @@ def process_data(
         # Train & transform
         X_transformed = feature_processor.fit_transform(X)
 
+        # Save feature names
+        # https://stackoverflow.com/questions/54646709/sklearn-pipeline-get-feature-names-after-onehotencode-in-columntransformer
+        # https://stackoverflow.com/questions/54570947/feature-names-from-onehotencoder
+        cat_names = list(feature_processor.transformers_[1][1]\
+            .named_steps['onehot'].get_feature_names_out(categorical_features))
+        # Remove blank spaces
+        cat_names = [col.replace(' ', '') for col in cat_names]
+        num_names = numerical_features
+        final_feature_names = num_names + cat_names
+
         ## -- 2. Target
         target_processor = LabelBinarizer()
         y_transformed = target_processor.fit_transform(y).ravel()
@@ -158,6 +175,7 @@ def process_data(
         processing_parameters['target'] = label
         processing_parameters['categorical_features'] = categorical_features
         processing_parameters['numerical_features'] = numerical_features
+        processing_parameters['final_feature_names'] = final_feature_names
         processing_parameters['feature_processor'] = feature_processor
         processing_parameters['target_processor'] = target_processor
 

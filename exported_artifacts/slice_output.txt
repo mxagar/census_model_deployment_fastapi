@@ -1,4 +1,4 @@
-Data slicing report, 2023-01-19 17:24:00.999706
+Data slicing report, 2023-01-20 11:27:48.564622
 Numerical columns are sliced at the median (equal or above, below).
 Categorical columns are sliced at each category.
 F1 scores are shown for each slice.

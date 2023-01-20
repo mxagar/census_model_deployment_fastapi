@@ -1,4 +1,4 @@
-Training and evaluation report, 2023-01-19 17:24:00.999364
+Training and evaluation report, 2023-01-20 11:27:48.564235
  
 # TRAINING
 Best score, f1 = 0.6839928678153674

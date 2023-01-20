@@ -70,9 +70,36 @@ List of most important dependencies:
 
 ### Continuous Integration
 
-- Github Actions; flake8, pytest, workflow (Python App)
+The project uses Github Actions from Github to implement Continuous Integration. In summary, every time we push a new version to Github (or perform a pull request), the package is checked in a custom container running on Github servers:
 
-`.github/workflows/python-app.yml`:
+- Dependencies are installed, including the package `census_salary`.
+- Linting is performed on the code using `flake8`.
+- `pytest` is run on the project.
+
+To create the CI Github Action, we simply choose the **Python Application** pre-configured workflow on the Github web interface:
+
+```
+Github repository > Actions > New Workflow > Python application: configure
+```
+
+The `python-app.yml` workflow YAML file needs to be modified, as well as other files in the repository. Here's a list of things to pay attention to:
+
+- Since we have a package, we need to install it in the container (see the YAML below).
+- Check which Python version we are using.
+- Add missing/required packages to `requirements.txt`: flake8, pytest, pyyaml, setuptools, etc.
+- Add a `.flake8` file to the repository to configure `flake8`, i.e., which folders/files we want to exclude form linting.
+- If the tests are in another folder than `test`, modify the `pytest command`.
+- If the tests trigger logging, create the logging file in the container (see YAML).
+- Make sure all commands defined in the YAML work on our local environment.
+
+Every time we push, the the build job will be run on the Github servers (see YAML); we can check the logs by clicking on the Github web interface:
+
+```
+Github repository > Actions > All workflows: Python application >
+    Select desired run > Jobs: build
+```
+
+The final `python-app.yml` YAML is stored and committed to `.github/workflows`, and its content is the following:
 
 ```yaml
 # This workflow will install Python dependencies, run tests and lint with a single version of Python
@@ -96,16 +123,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Set up Python 3.8
+    - name: Set up Python 3.10
       uses: actions/setup-python@v3
       with:
-        python-version: "3.8.15"
+        python-version: "3.10"
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        # custom library
         pip install .
     - name: Lint with flake8
       run: |
@@ -115,8 +141,11 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
+        # Create a logs file
+        mkdir logs
+        touch logs/census_pipeline.log
+        # Test
         pytest tests
-
 ```
 
 ## Notes on the Implemented Analysis and Modeling

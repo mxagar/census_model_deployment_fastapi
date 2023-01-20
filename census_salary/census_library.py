@@ -162,6 +162,7 @@ def run_processing(df, config, training=True, processing_parameters=None):
         - target : str of target/label column
         - categorical_features: list of all categorical features used/processed
         - numerical_features: list of all numerical features used/processed
+        - final_feature_names: final list of feature names in the transformed X
         - feature_processor : trained feature processor composed of Pipeline objects
             embedded in a ColumnTransformer, which applies specific
             SimpleImputer, OneHotEncoder, StandardScaler
@@ -214,6 +215,7 @@ def run_processing(df, config, training=True, processing_parameters=None):
         training=training,
         processing_parameters=processing_parameters
     )
+    #print(type(X_transformed))
     logger.info("Data processing successful.")
 
     # Persist
@@ -479,6 +481,7 @@ def train_pipeline(config_filename='config.yaml'):
     print("Running model fit...")
     config_model = config['random_forest_parameters']
     config_grid = config['random_forest_grid_search']
+    #print(type(X_train))
     model, best_params, best_score = train_model(X_train, y_train, config_model, config_grid)
     print("Training results:")
     print(f"- Best score, {config_grid['scoring']} = {best_score}")

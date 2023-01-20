@@ -185,7 +185,6 @@ def process_data(
         # y
         try:
             y_transformed = target_processor.transform(y).ravel()
-            raise e
         except ValueError as e:
             y_transformed = np.array([])
             logger.info("Empty target/label array.")

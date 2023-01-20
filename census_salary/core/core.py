@@ -42,6 +42,7 @@ class ProcessingParameters(BaseModel):
     target: str
     categorical_features: List[str]
     numerical_features: List[str]
+    final_feature_names: List[str]
     # numerical: SimpleImputer, StandardScaler
     # categorical: SimpleImputer, OneHotEncoder
     feature_processor: ColumnTransformer

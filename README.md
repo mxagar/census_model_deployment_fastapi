@@ -23,6 +23,7 @@ The focus of this project doesn't lie so much on the data processing, but on the
   - [Notes on Theory](#notes-on-theory)
     - [Model Card](#model-card)
     - [Continuous Integration](#continuous-integration)
+    - [Data and Model Versioning](#data-and-model-versioning)
     - [FastAPI Application](#fastapi-application)
     - [Deployment to Heroku](#deployment-to-heroku)
     - [Docker Container](#docker-container)
@@ -162,6 +163,16 @@ jobs:
         # Test
         pytest tests
 ```
+
+### Data and Model Versioning
+
+The current version of this project does not use any data or model versioning. The dataset is included in the repository and the inference artifacts are not uploaded anywhere. However, in a professional setting and with increasingly larger artifacts, that is not viable. Two easy options to apply versioning to any kind of artifacts are the following: 
+
+1. **DVC**: We can define remote storage folders (e.g., in GDrive, S3, etc.) and upload large datasets to them while ignoring them in git. DVC requires a buildpack for Heroku, as explained in the [`starter`](starter) folder. Check my [notes on DVC](https://github.com/mxagar/mlops_udacity/blob/main/03_Deployment/MLOpsND_Deployment.md#3-data-and-model-versioning) for more information.
+
+2. **Weights and Biases**: we can create model and dataset artifacts and upload/download them from the W&B servers. An example of mine where W&B functionalities are used extensible is the following: [music_genre_classification](https://github.com/mxagar/music_genre_classification).
+
+
 
 ### FastAPI Application
 

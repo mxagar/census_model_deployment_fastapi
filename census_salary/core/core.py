@@ -1,7 +1,9 @@
-"""This module contains 
+"""This module contains
 general data structure definitions and their respective
 loading, validation and saving functions.
 In other words, it is a data manager for all structures used in the library.
+
+Pylint: 7.61/10.
 
 Author: Mikel Sagardia
 Date: 2023-01-16
@@ -27,7 +29,8 @@ logging.basicConfig(
     filename='./logs/census_pipeline.log', # filename, where it's dumped
     level=logging.INFO, # minimum level I log
     filemode='a', # append
-    format='%(name)s - %(asctime)s - %(levelname)s - %(message)s') # add function/module name for tracing
+    format='%(name)s - %(asctime)s - %(levelname)s - %(message)s')
+    # add function/module name for tracing
 logger = logging.getLogger()
 
 class ProcessingParameters(BaseModel):
@@ -43,7 +46,7 @@ class ProcessingParameters(BaseModel):
     # categorical: SimpleImputer, OneHotEncoder
     feature_processor: ColumnTransformer
     target_processor: LabelBinarizer
-    
+
     class Config:
         arbitrary_types_allowed = True
 
@@ -118,7 +121,7 @@ class DataRow(BaseModel):
     hours_per_week: int
     native_country: str
     salary: str
-    
+
 class MultipleDataRows(BaseModel):
     """
     Multiple dataset rows,
@@ -129,13 +132,13 @@ class MultipleDataRows(BaseModel):
 
 def load_data(data_path: str = "./data/census.csv") -> pd.DataFrame:
     """Gets and loads dataset as a dataframe.
-    
+
     Inputs
     ------
     data_path : str
         String of to the local dataset path.
         Default: "./data/census.csv".
-        
+
     Returns
     -------
     df: pd.DataFrame
@@ -143,11 +146,12 @@ def load_data(data_path: str = "./data/census.csv") -> pd.DataFrame:
     """
     # Download dataset to local file directory
     get_data(destination_file=data_path)
-    
+
     try:
         df = pd.read_csv(data_path) # './data/census.csv'
     except FileNotFoundError as e:
         logger.error("Dataset file not found: %s.", data_path)
+        raise e
 
     return df
 
@@ -158,12 +162,12 @@ def validate_data(df: pd.DataFrame) -> Tuple[pd.DataFrame, Optional[dict]]:
     - Dropping duplicates.
     Validation occurs by converting the loaded
     dictionary into the MultipleDataRows class/object defined in core.py.
-        
+
     Inputs
     ------
     df : pd.DataFrame
         String of to the local dataset path.
-        
+
     Returns
     -------
     df_validated: pd.DataFrame
@@ -183,7 +187,7 @@ def validate_data(df: pd.DataFrame) -> Tuple[pd.DataFrame, Optional[dict]]:
 
     # Drop duplicates
     df_validated = df.drop_duplicates().reset_index(drop=True)
-    
+
     # Other checks we could do:
     # - convert types: df_validated[col] = df_validated[col].astype("O")
     # - drop NA: df_validated = df_validated.dropna()
@@ -205,18 +209,18 @@ def load_validate_config(
     """Loads and validates general configuration YAML.
     Validation occurs by converting the loaded
     dictionary into the GeneralConfig class/object defined in core.py.
-    
+
     Inputs
     ------
     config_filename : str
         String of to the local config file path.
-        
+
     Returns
     -------
     config: dict
         Validated configuration dictionary.
     """
-    config = dict()
+    config = {}
     try:
         with open(config_filename) as f: # 'config.yaml'
             config = yaml.safe_load(f)
@@ -224,8 +228,10 @@ def load_validate_config(
             _ = GeneralConfig(**config)
     except FileNotFoundError as e:
         logger.error("Configuration YAML not found: %s.", config_filename)
+        raise e
     except ValidationError as e:
         logger.error("Configuration file validation error.")
+        raise e
 
     return config
 
@@ -234,18 +240,18 @@ def load_validate_processing_parameters(
     """Loads and validates the processing parameters.
     Validation occurs by converting the loaded
     dictionary into the ProcessingParameters class/object defined in core.py.
-    
+
     Inputs
     ------
     processing_artifact : str
         String of to the local processing parameters file path.
-        
+
     Returns
     -------
     processing_parameters: dict
         Validated processing parameters dictionary.
     """
-    processing_parameters = dict()
+    processing_parameters = {}
     try:
         with open(processing_artifact, 'rb') as f: # 'exported_artifacts/processing_parameters.pickle'
             processing_parameters = pickle.load(f)
@@ -253,9 +259,11 @@ def load_validate_processing_parameters(
             _ = ProcessingParameters(**processing_parameters)
     except FileNotFoundError as e:
         logger.error("Processing parameters artifact/pickle not found: %s.", processing_artifact)
+        raise e
     except ValidationError as e:
         logger.error("Processing parameters artifact/pickle validation error.")
-        
+        raise e
+
     return processing_parameters
 
 def load_validate_model(
@@ -263,12 +271,12 @@ def load_validate_model(
     """Loads and validates the (trained) model.
     Validation occurs by checking that the loaded
     object type is RandomForestClassifier.
-    
+
     Inputs
     ------
     model_artifact : str
         String of to the local model file path.
-        
+
     Returns
     -------
     model: RandomForestClassifier
@@ -281,9 +289,11 @@ def load_validate_model(
         assert isinstance(model, RandomForestClassifier)
     except FileNotFoundError as e:
         logger.error("Model artifact/pickle not found: %s.", model_artifact)
+        raise e
     except AssertionError as e:
-        logger.error("Model artifact/pickle is not a RandomForestClassifier.")        
-    
+        logger.error("Model artifact/pickle is not a RandomForestClassifier.")
+        raise e
+
     return model
 
 def save_processing_parameters(processing_parameters: dict,
@@ -291,7 +301,7 @@ def save_processing_parameters(processing_parameters: dict,
     """Persists the dictionary which contains
     the processing parameters into a serialized
     pickle file.
-    
+
     Inputs
     ------
     processing_parameters : dict
@@ -299,27 +309,30 @@ def save_processing_parameters(processing_parameters: dict,
         It should be equivalent to the class ProcessingParameters.
     processing_artifact: str (default = "./exported_artifacts/processing_parameters.pickle")
         File path to persist the dictionary.
-        
+
     Returns
     -------
     None
     """
-    pickle.dump(processing_parameters, open(processing_artifact,'wb')) # wb: write bytes
+    with open(processing_artifact, 'wb') as f:
+        # wb: write bytes
+        pickle.dump(processing_parameters, f) 
 
-def save_model(model: RandomForestClassifier, 
+def save_model(model: RandomForestClassifier,
                model_artifact: str = "./exported_artifacts/model.pickle") -> None:
     """Persists the model object into a serialized pickle file.
-    
+
     Inputs
     ------
     model : RandomForestClassifier
         The (trained) model.
     model_artifact: str (default = "./exported_artifacts/model.pickle")
         File path to persist the model.
-        
+
     Returns
     -------
     None
     """
-    pickle.dump(model, open(model_artifact,'wb')) # wb: write bytes
-
+    with open(model_artifact,'wb') as f:
+        # wb: write bytes
+        pickle.dump(model, f)

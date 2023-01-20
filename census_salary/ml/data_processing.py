@@ -8,6 +8,8 @@ as a (X, y) pair.
 Additionally, an object which contains the
 processing parameters is returned.
 
+Pylint: 7.37/10.
+
 Author: Mikel Sagardia
 Date: 2023-01-16
 """
@@ -19,7 +21,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import (OneHotEncoder,
                                    StandardScaler,
                                    LabelBinarizer)
-from sklearn.pipeline import make_pipeline #, Pipeline 
+from sklearn.pipeline import make_pipeline #, Pipeline
 from sklearn.compose import ColumnTransformer
 
 # Logging configuration
@@ -27,13 +29,14 @@ logging.basicConfig(
     filename='./logs/census_pipeline.log', # filename, where it's dumped
     level=logging.INFO, # minimum level I log
     filemode='a', # append
-    format='%(name)s - %(asctime)s - %(levelname)s - %(message)s') # add function/module name for tracing
+    format='%(name)s - %(asctime)s - %(levelname)s - %(message)s')
+    # add function/module name for tracing
 logger = logging.getLogger()
 
 def process_data(
     df,
-    categorical_features=[],
-    numerical_features=[],    
+    categorical_features,
+    numerical_features,
     label=None,
     training=True,
     processing_parameters=None
@@ -41,7 +44,7 @@ def process_data(
     """ Process the data used in the machine learning pipeline.
 
     Processes the data using the following sklearn transformers:
-    
+
     - SimpleImputer
     - OneHotEncoder (categorical features)
     - StandardScaler (numerical features)
@@ -50,8 +53,8 @@ def process_data(
     This function can be used in either training or
     inference/validation.
 
-    Notes: 
-    
+    Notes:
+
     1. The used random forest classifier doesn't really require scaling
     the numerical features, but that transformer is added in case
     the pipeline is extended with other models which do require scaling.
@@ -108,7 +111,8 @@ def process_data(
         y = np.array([])
     except KeyError as e:
         logger.error("A column is missing in the dataset.")
-    
+        raise e
+
     #if training or label:
     if label:
         if label in df.columns:
@@ -119,7 +123,7 @@ def process_data(
     #X_categorical = X[categorical_features].values
     #X_numerical = X[numerical_features].values
 
-    if training is True or not processing_parameters: # TRAINING  
+    if training is True or not processing_parameters: # TRAINING
         ## -- 1. Features
         # Define processing for categorical columns
         # handle_unknown: label encoders need to be able to deal with unknown labels!
@@ -143,22 +147,22 @@ def process_data(
         )
         # Train & transform
         X_transformed = feature_processor.fit_transform(X)
-        
-        ## -- 2. Target      
+
+        ## -- 2. Target
         target_processor = LabelBinarizer()
         y_transformed = target_processor.fit_transform(y).ravel()
-        
+
         ## -- 3. Pack everything into a dictionary
-        processing_parameters = dict()
+        processing_parameters = {}
         processing_parameters['features'] = categorical_features + numerical_features
         processing_parameters['target'] = label
         processing_parameters['categorical_features'] = categorical_features
         processing_parameters['numerical_features'] = numerical_features
         processing_parameters['feature_processor'] = feature_processor
         processing_parameters['target_processor'] = target_processor
-        
+
         logger.info("Data processing pipeline trained and data transformed.")
-        
+
     else: # PREDICTION
         ## -- 1. Extract processors
         try:
@@ -166,22 +170,26 @@ def process_data(
             target_processor = processing_parameters['target_processor']
         except KeyError as e:
             logger.error("Processing parameters object has missing keys.")
+            raise e
         except TypeError as e:
             logger.error("Processing parameters object is not the expect object type.")
-        
+            raise e
+
         ## -- 2. Transform
         # X
         try:
             X_transformed = feature_processor.transform(X)
         except ValueError as e:
-            logger.error("The columns in X don't match with the columns expected by the processing pipeline.")        
+            logger.error("The columns in X don't match with the columns expected by the processing pipeline.")
+            raise e
         # y
         try:
             y_transformed = target_processor.transform(y).ravel()
+            raise e
         except ValueError as e:
             y_transformed = np.array([])
             logger.info("Empty target/label array.")
-            
+
         logger.info("Data transformed.")
 
     return X_transformed, y_transformed, processing_parameters

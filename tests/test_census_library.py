@@ -14,7 +14,7 @@ Those tests need to be carried out in the specified order,
 because the returned objects are re-used as objects in the pytest namespace.
 
 This test file is run in the CI of Github Actions.
-PEP8 conventions checked with flake8.
+Pylint: 8.70/10.
 
 Note that the testing configuration fixtures
 are located in `conftest.py`.
@@ -48,7 +48,7 @@ def test_run_setup(config_filename, run_setup):
     df_train, df_test, config = run_setup(config_filename=config_filename, config=None)
     pytest.df_train_test = (df_train, df_test)
     pytest.config_dict = config
-    
+
     # Data frames
     try:
         assert df_train.shape[0] > 0
@@ -58,7 +58,7 @@ def test_run_setup(config_filename, run_setup):
     except AssertionError as err:
         print("TESTING run_setup(): ERROR - Data frame has no rows / columns.")
         raise err
-    
+
     # Configuration dictionary
     try:
         assert isinstance(config, dict)
@@ -82,7 +82,7 @@ def test_run_processing(run_processing,
                                                                          training=True,
                                                                          processing_parameters=None)
     pytest.processing_parameters = processing_parameters
-    
+
     # Processing parameters
     try:
         assert sorted(processing_parameters['numerical_features']) == sorted(numerical_features)
@@ -94,7 +94,7 @@ def test_run_processing(run_processing,
     except AssertionError as err:
         print("TESTING run_processing(): ERROR - categorical_features don't match in config and created processing pipeline.")
         raise err
-    
+
     # Transformed dataset
     try:
         assert X_transformed.shape[0] > 0
@@ -159,7 +159,7 @@ def test_train_pipeline(config_filename,
 
 def test_load_pipeline(config_filename,
                        load_pipeline):
-    """Test load_pipeline function.""" 
+    """Test load_pipeline function."""
     model, processing_parameters, config = load_pipeline(config_filename=config_filename)
 
     # Check types of artifacts
@@ -196,4 +196,4 @@ def test_predict(predict, target):
         assert len(pred_decoded) == pytest.df_train_test[1].shape[0]
     except AssertionError as err:
         print("TESTING predict(): ERROR - Unexpected length of arrays.")
-        raise err    
+        raise err

@@ -6,6 +6,8 @@ It:
 - computes the model metrics on a given dataset split (test, preferably)
 - and provides an inference function.
 
+Pytlint: 8.61/10.
+
 Author: Mikel Sagardia
 Date: 2023-01-16
 """
@@ -16,8 +18,8 @@ import logging
 
 from sklearn.metrics import (fbeta_score,
                              precision_score,
-                             recall_score,
-                             roc_auc_score)
+                             recall_score)
+                             #roc_auc_score
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV
 
@@ -81,7 +83,7 @@ def train_model(X_train, y_train, config_model, config_grid):
     # Find best hyperparameters and best estimator pipeline
     search.fit(X_train, y_train)
     logger.info("Model successfully trained.")
-    
+
     model = search.best_estimator_
     best_params = search.best_params_
     best_score = search.best_score_
@@ -106,7 +108,7 @@ def compute_model_metrics(y, preds, probs):
         Predicted labels, binarized.
     probs : np.array
         Predicted probabilities.
-        
+
     Returns
     -------
     precision : float
@@ -117,7 +119,7 @@ def compute_model_metrics(y, preds, probs):
     precision = precision_score(y, preds, zero_division=1)
     recall = recall_score(y, preds, zero_division=1)
     #roc_auc = roc_auc_score(y, probs)
-    
+
     #return precision, recall, fbeta, roc_auc
     return precision, recall, fbeta
 
@@ -170,9 +172,8 @@ def decode_labels(pred, processing_parameters):
     -------
     preds : np.array
         Prediction labels in the original dataset form.
-
-    """    
+    """
     target_processor = processing_parameters['target_processor']
     pred_decoded = target_processor.inverse_transform(pred)
-    
+
     return pred_decoded

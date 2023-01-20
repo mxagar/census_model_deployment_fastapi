@@ -20,3 +20,4 @@ dependencies:
       - pytest
       - flake8
       - setuptools
+      - pylint

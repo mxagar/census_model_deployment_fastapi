@@ -121,8 +121,14 @@ Finally, the following figure shows the ROC curve of the model using the test sp
 
 ## Ethical Considerations
 
+Census data is associated with bias and ethical issues, and a dataset with which we try to predict the salary of a person, more so.
 
+The package [Aequitas](http://www.datasciencepublicpolicy.org/our-work/tools-guides/aequitas/) was used to analyze the fairness of the dataset. Even though the high level API seems to characterize the dataset as fair, a closer look reveals that many metrics are `NaN`, i.e., it seems there is not enough data in each category slice to evaluate the fairness of the dataset. The evaluation is in section 6 from [`census_notebook.ipynb`](census_notebook.ipynb).
+
+Further research is required in that respect if the model were used to make decisions.
 
 ## Caveats and Recommendations
 
-
+- [ ] Extend the grid search to cover more realistic hyperparameter values.
+- [ ] Try other models that have been proven to work performantly with tabular datasets, e.g., gradient boosting (XGBoost), etc.
+- [ ] Further evaluate the bias/ethical issues of the dataset, specially if the model were deployed of decisions were made with it.

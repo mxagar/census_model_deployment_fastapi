@@ -11,7 +11,7 @@ Pytlint: 8.61/10.
 Author: Mikel Sagardia
 Date: 2023-01-16
 """
-import logging
+#import logging
 #import pickle
 #import numpy as np
 #import pandas as pd
@@ -23,13 +23,8 @@ from sklearn.metrics import (fbeta_score,
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV
 
-# Logging configuration
-logging.basicConfig(
-    filename='./logs/census_pipeline.log', # filename, where it's dumped
-    level=logging.INFO, # minimum level I log
-    filemode='a', # append
-    format='%(name)s - %(asctime)s - %(levelname)s - %(message)s') # add function/module name for tracing
-logger = logging.getLogger()
+# Logging configuration: defined in core.py
+from census_salary.core.core import logger
 
 def train_model(X_train, y_train, config_model, config_grid):
     """

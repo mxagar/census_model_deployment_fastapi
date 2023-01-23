@@ -1,7 +1,7 @@
 census_notebook.ipynb
 ModelCard.md
 assets
-data
+data/census.csv
 tests
 main.py
 starter

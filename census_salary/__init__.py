@@ -25,4 +25,7 @@ from .core.core import (ProcessingParameters,
                         load_validate_processing_parameters,
                         load_validate_model,
                         save_processing_parameters,
-                        save_model)
+                        save_model,
+                        logger)
+
+__version__ = "0.0.1"

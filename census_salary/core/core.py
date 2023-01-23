@@ -28,7 +28,7 @@ from census_salary.data.dataset import get_data
 logging.basicConfig(
     filename='./logs/census_pipeline.log', # filename, where it's dumped
     level=logging.INFO, # minimum level I log
-    filemode='a', # append
+    filemode='w', # append
     format='%(name)s - %(asctime)s - %(levelname)s - %(message)s')
     # add function/module name for tracing
 # Thi will be imported in the rest of the modules

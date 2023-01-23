@@ -31,6 +31,7 @@ logging.basicConfig(
     filemode='a', # append
     format='%(name)s - %(asctime)s - %(levelname)s - %(message)s')
     # add function/module name for tracing
+# Thi will be imported in the rest of the modules
 logger = logging.getLogger()
 
 class ProcessingParameters(BaseModel):
@@ -48,6 +49,11 @@ class ProcessingParameters(BaseModel):
     feature_processor: ColumnTransformer
     target_processor: LabelBinarizer
 
+    # With the Pydantic Config class
+    # we can control the model behavior;
+    # here we allow class types for fields
+    # feature_processor and target_processor
+    # which are  not define here.
     class Config:
         arbitrary_types_allowed = True
 
@@ -106,6 +112,12 @@ class GeneralConfig(BaseModel):
 class DataRow(BaseModel):
     """
     Single dataset row.
+    Note that the field names are the processed ones,
+    not the original ones!
+    
+    Note that the salary field (target) is optional:
+    for training, we need/expect it,
+    for inference not!
     """
     age: int
     workclass: str
@@ -121,15 +133,54 @@ class DataRow(BaseModel):
     capital_loss: int
     hours_per_week: int
     native_country: str
-    salary: str
+    salary: Optional[str]
 
 class MultipleDataRows(BaseModel):
     """
     Multiple dataset rows,
     i.e., a dataset.
-    This class is used for validation.
+    This class is used for validation at any stage:
+    training, evaluation, inference via API, etc.
+    
+    We define an example input for inference
+    via the Pydantic Config class.
+    Note that:
+    - I have removed "salary", because the example is for an inference
+    - The column/field names are NOT the original ones, but the processed ones;
+          we need to input such fields via the API,
+          even though the training dataset has not those fields.
+    - The field values are NOT the original ones, but the processed ones
+          (blank spaces removed) but that is irrelevant,
+          because validate_data() takes care of that.
+    - I have taken the values of the first entry as example
+    This schema will be used in the API, i.e., we force
+    the user to input a JSON with such field-names.
     """
     inputs: List[DataRow]
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "inputs": [
+                    {
+                        "age": 39,
+                        "workclass": "State-gov",
+                        "fnlgt": 77516,
+                        "education": "Bachelors",
+                        "education_num": 13,
+                        "marital_status": "Never-married",
+                        "occupation": "Adm-clerical",
+                        "relationship": "Not-in-family",
+                        "race": "White",
+                        "sex": "Male",
+                        "capital_gain": 2174,
+                        "capital_loss": 0,
+                        "hours_per_week": 40,
+                        "native_country": "United-States"
+                    }
+                ]
+            }
+        }
 
 def load_data(data_path: str = "./data/census.csv") -> pd.DataFrame:
     """Gets and loads dataset as a dataframe.
@@ -176,7 +227,7 @@ def validate_data(df: pd.DataFrame) -> Tuple[pd.DataFrame, Optional[dict]]:
     errors: dict
         Validation error, if there was one; otherwise None is returned.
     """
-    # Rename columns
+    # Rename column names
     # - remove preceding blank space: ' education' -> 'education', etc.
     # - replace - with _: 'education-num' -> 'education_num', etc.
     #df_validated = df.copy()
@@ -185,6 +236,14 @@ def validate_data(df: pd.DataFrame) -> Tuple[pd.DataFrame, Optional[dict]]:
         columns={col_name: col_name.replace(' ', '') for col_name in df.columns})
     df = df.rename(
         columns={col_name: col_name.replace('-', '_') for col_name in df.columns})
+
+    # Remove blank spaces from categorical column fields
+    categorical_cols = list(df.select_dtypes(include = ['object']))
+    for col in categorical_cols:
+        df[col] = df[col].str.replace(' ', '')
+    # Alternatives:
+    # df[col] = df[col].str.strip()
+    # df = pd.read_csv('dataset.csv', skipinitialspace = True)        
 
     # Drop duplicates
     df_validated = df.drop_duplicates().reset_index(drop=True)

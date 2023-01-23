@@ -5,6 +5,7 @@ scikit-learn
 pytest
 requests
 fastapi==0.63.0
+httpx
 uvicorn
 gunicorn
 flake8

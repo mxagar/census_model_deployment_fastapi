@@ -51,7 +51,7 @@ Date: 2023-01-16
 """
 # Script to train machine learning model.
 from datetime import datetime
-import logging
+#import logging
 #import pickle
 #import yaml
 #import numpy as np
@@ -72,14 +72,8 @@ from .core.core import (load_data,
                         save_processing_parameters,
                         save_model)
 
-# Logging configuration
-logging.basicConfig(
-    filename='./logs/census_pipeline.log', # filename, where it's dumped
-    level=logging.INFO, # minimum level I log
-    filemode='a', # append
-    format='%(name)s - %(asctime)s - %(levelname)s - %(message)s')
-    # add function/module name for tracing
-logger = logging.getLogger()
+# Logging configuration: defined in core.py
+from census_salary.core.core import logger
 
 def run_setup(config_filename='config.yaml', config=None):
     """Loads dataset and validates it:
@@ -222,7 +216,7 @@ def run_processing(df, config, training=True, processing_parameters=None):
     if training:
         save_processing_parameters(processing_parameters=processing_parameters,
                                    processing_artifact=config['processing_artifact'])
-    logger.info("Processing parameters correctly persisted.")
+        logger.info("Processing parameters correctly persisted.")
 
     return X_transformed, y_transformed, processing_parameters
 

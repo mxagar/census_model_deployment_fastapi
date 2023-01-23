@@ -25,8 +25,11 @@ To install pytest:
 
 >> pip install -U pytest
 
-The script expects the proper dataset to be located in `./data`
-or the folder specified in `config.yaml`.
+The script expects
+- the configuration file `config.yaml` at the root level
+    where we call the tests.
+- the proper dataset to be located in `./data`
+    or the folder specified in `config.yaml`.
 
 Author: Mikel Sagardia
 Date: 2023-01-17
@@ -185,9 +188,10 @@ def test_predict(predict, target):
     pred_decoded = predict(X=X,
                            model=pytest.model,
                            processing_parameters=pytest.processing_parameters)
-    # Check that all predicted classes are in df_test: ' <=50K', ' >50K'
+    # Check that all predicted classes are in df_test: '<=50K', '>50K'
     try:
-        assert sorted(list(set(list(pred_decoded)))) == sorted(list(pytest.df_train_test[1][target].unique()))
+        #assert sorted(list(set(list(pred_decoded)))) == sorted(list(pytest.df_train_test[1][target].unique()))
+        assert sorted(list(set(list(pred_decoded)))) == sorted(list(pytest.processing_parameters['target_processor'].classes_))
     except AssertionError as err:
         print("TESTING predict(): ERROR - Unexpected classes predicted.")
         raise err

@@ -1,5 +1,8 @@
 """This module contains
 all functions necessary to fetch the data.
+Currently it is empty, because the dataset is local,
+but if we needed to download it from somewhere,
+we could write the download commands here.
 
 Author: Mikel Sagardia
 Date: 2023-01-16

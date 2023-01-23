@@ -13,7 +13,7 @@ Pylint: 7.37/10.
 Author: Mikel Sagardia
 Date: 2023-01-16
 """
-import logging
+#import logging
 import numpy as np
 #import pandas as pd
 
@@ -24,14 +24,8 @@ from sklearn.preprocessing import (OneHotEncoder,
 from sklearn.pipeline import make_pipeline, Pipeline
 from sklearn.compose import ColumnTransformer
 
-# Logging configuration
-logging.basicConfig(
-    filename='./logs/census_pipeline.log', # filename, where it's dumped
-    level=logging.INFO, # minimum level I log
-    filemode='a', # append
-    format='%(name)s - %(asctime)s - %(levelname)s - %(message)s')
-    # add function/module name for tracing
-logger = logging.getLogger()
+# Logging configuration: defined in core.py
+from census_salary.core.core import logger
 
 def process_data(
     df,

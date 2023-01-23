@@ -53,29 +53,30 @@ from census_salary import load_pipeline, validate_data, predict
 # Note that app.py must be called from the folder where config.yaml is,
 # i.e., for instance as:
 # >> uvicorn api.app:app --reload
-PROJECT_NAME = "Census Salary Model API"
+API_PROJECT_NAME = "Census Salary Model API"
 CONFIG_FILENAME = "./config.yaml"
+INDEX_BODY = (
+    "<html>"
+    "<body style='padding: 10px;'>"
+    "<h1>Welcome to the API</h1>"
+    "<div>"
+    "Check the <a href='/docs'>documentation</a>."
+    "</div>"
+    "</body>"
+    "</html>"
+)
 
 # Load model pipeline: model + data processing
 model, processing_parameters, config = load_pipeline(config_filename=CONFIG_FILENAME)
 
 # FastAPI app
-app = FastAPI(title=PROJECT_NAME)
+app = FastAPI(title=API_PROJECT_NAME)
 
 @app.get("/")
 def index(request: Request) -> Any:
     """Basic HTML response.
     Default welcome pages of API."""
-    body = (
-        "<html>"
-        "<body style='padding: 10px;'>"
-        f"<h1>Welcome to the {PROJECT_NAME}</h1>"
-        "<div>"
-        "Check the <a href='/docs'>documentation</a>."
-        "</div>"
-        "</body>"
-        "</html>"
-    )
+    body = INDEX_BODY
 
     return HTMLResponse(content=body)
 
@@ -84,7 +85,7 @@ def health() -> dict:
     """Root get, which returns general API information (version & Co.). 
     """
     health = Health(
-        name=PROJECT_NAME,
+        name=API_PROJECT_NAME,
         api_version=api_version,
         model_lib_version=model_lib_version
     )

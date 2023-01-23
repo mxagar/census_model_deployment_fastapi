@@ -1,4 +1,4 @@
-Data slicing report, 2023-01-20 11:27:48.564622
+Data slicing report, 2023-01-23 12:11:45.328964
 Numerical columns are sliced at the median (equal or above, below).
 Categorical columns are sliced at each category.
 F1 scores are shown for each slice.
@@ -30,118 +30,118 @@ hours_per_week
 		below_median: 0.691542288557214
 workclass
 	num_categories: 9
-		 Private: 0.6809015421115066
-		 Local-gov: 0.722972972972973
-		 Self-emp-not-inc: 0.6565656565656567
-		 State-gov: 0.6900584795321637
-		 ?: 0.6037735849056604
-		 Federal-gov: 0.7692307692307692
-		 Self-emp-inc: 0.8181818181818183
-		 Never-worked: None
-		 Without-pay: None
+		Private: 0.6809015421115066
+		Local-gov: 0.722972972972973
+		Self-emp-not-inc: 0.6565656565656567
+		State-gov: 0.6900584795321637
+		?: 0.6037735849056604
+		Federal-gov: 0.7692307692307692
+		Self-emp-inc: 0.8181818181818183
+		Never-worked: None
+		Without-pay: None
 education
 	num_categories: 16
-		 Masters: 0.8658227848101266
-		 Bachelors: 0.7856450048496606
-		 12th: 0.30769230769230765
-		 Assoc-acdm: 0.68
-		 Some-college: 0.6097867001254705
-		 HS-grad: 0.5667011375387798
-		 Doctorate: 0.8689655172413794
-		 Assoc-voc: 0.6542056074766355
-		 11th: 0.39999999999999997
-		 1st-4th: 1.0
-		 Prof-school: 0.8770053475935828
-		 10th: 0.3333333333333333
-		 Preschool: 1.0
-		 7th-8th: 0.2222222222222222
-		 9th: 0.25
-		 5th-6th: 1.0
+		Masters: 0.8658227848101266
+		Bachelors: 0.7856450048496606
+		12th: 0.30769230769230765
+		Assoc-acdm: 0.68
+		Some-college: 0.6097867001254705
+		HS-grad: 0.5667011375387798
+		Doctorate: 0.8689655172413794
+		Assoc-voc: 0.6542056074766355
+		11th: 0.39999999999999997
+		1st-4th: 1.0
+		Prof-school: 0.8770053475935828
+		10th: 0.3333333333333333
+		Preschool: 1.0
+		7th-8th: 0.2222222222222222
+		9th: 0.25
+		5th-6th: 1.0
 marital_status
 	num_categories: 7
-		 Never-married: 0.5606060606060607
-		 Married-civ-spouse: 0.7082872928176795
-		 Divorced: 0.5
-		 Widowed: 0.6666666666666666
-		 Separated: 0.6363636363636364
-		 Married-spouse-absent: 0.4
-		 Married-AF-spouse: 0.0
+		Never-married: 0.5606060606060607
+		Married-civ-spouse: 0.7082872928176795
+		Divorced: 0.5
+		Widowed: 0.6666666666666666
+		Separated: 0.6363636363636364
+		Married-spouse-absent: 0.4
+		Married-AF-spouse: 0.0
 occupation
 	num_categories: 15
-		 Machine-op-inspct: 0.5
-		 Adm-clerical: 0.6666666666666667
-		 Other-service: 0.2758620689655173
-		 Exec-managerial: 0.8070562293274531
-		 Craft-repair: 0.551470588235294
-		 Prof-specialty: 0.8120481927710843
-		 Handlers-cleaners: 0.43243243243243246
-		 ?: 0.6037735849056604
-		 Sales: 0.7169811320754716
-		 Protective-serv: 0.686868686868687
-		 Transport-moving: 0.4729064039408867
-		 Tech-support: 0.7333333333333333
-		 Farming-fishing: 0.3466666666666666
-		 Priv-house-serv: 0.0
-		 Armed-Forces: None
+		Machine-op-inspct: 0.5
+		Adm-clerical: 0.6666666666666667
+		Other-service: 0.2758620689655173
+		Exec-managerial: 0.8070562293274531
+		Craft-repair: 0.551470588235294
+		Prof-specialty: 0.8120481927710843
+		Handlers-cleaners: 0.43243243243243246
+		?: 0.6037735849056604
+		Sales: 0.7169811320754716
+		Protective-serv: 0.686868686868687
+		Transport-moving: 0.4729064039408867
+		Tech-support: 0.7333333333333333
+		Farming-fishing: 0.3466666666666666
+		Priv-house-serv: 0.0
+		Armed-Forces: None
 relationship
 	num_categories: 6
-		 Not-in-family: 0.5511811023622047
-		 Husband: 0.7036114570361146
-		 Unmarried: 0.5263157894736842
-		 Own-child: 0.4444444444444445
-		 Other-relative: 0.30769230769230765
-		 Wife: 0.7518796992481204
+		Not-in-family: 0.5511811023622047
+		Husband: 0.7036114570361146
+		Unmarried: 0.5263157894736842
+		Own-child: 0.4444444444444445
+		Other-relative: 0.30769230769230765
+		Wife: 0.7518796992481204
 race
 	num_categories: 5
-		 White: 0.692887029288703
-		 Asian-Pac-Islander: 0.6857142857142856
-		 Black: 0.7525773195876289
-		 Amer-Indian-Eskimo: 0.3636363636363637
-		 Other: 0.6666666666666666
+		White: 0.692887029288703
+		Asian-Pac-Islander: 0.6857142857142856
+		Black: 0.7525773195876289
+		Amer-Indian-Eskimo: 0.3636363636363637
+		Other: 0.6666666666666666
 sex
 	num_categories: 2
-		 Female: 0.7009523809523809
-		 Male: 0.692532088681447
+		Female: 0.7009523809523809
+		Male: 0.692532088681447
 native_country
 	num_categories: 41
-		 United-States: 0.6926668497665476
-		 Dominican-Republic: 1.0
-		 Italy: 0.7777777777777778
-		 Portugal: 1.0
-		 Puerto-Rico: 0.8
-		 Canada: 0.6
-		 India: 0.6666666666666666
-		 ?: 0.7397260273972602
-		 Haiti: 0.6666666666666666
-		 Mexico: 0.6666666666666666
-		 Cuba: 0.888888888888889
-		 Philippines: 0.8666666666666666
-		 Hungary: None
-		 Poland: 0.5714285714285715
-		 China: 0.7272727272727273
-		 Germany: 0.75
-		 South: 0.7058823529411764
-		 Jamaica: 1.0
-		 Ecuador: 0.0
-		 Taiwan: 1.0
-		 England: 0.6
-		 Japan: 0.7142857142857143
-		 Guatemala: 1.0
-		 El-Salvador: 0.8
-		 Vietnam: None
-		 Nicaragua: 0.5
-		 Peru: None
-		 Yugoslavia: None
-		 France: None
-		 Columbia: 0.0
-		 Honduras: None
-		 Cambodia: None
-		 Trinadad&Tobago: None
-		 Iran: 0.6666666666666666
-		 Outlying-US(Guam-USVI-etc): None
-		 Laos: None
-		 Hong: None
-		 Thailand: None
-		 Greece: None
-		 Ireland: None
-		 Scotland: None
+		United-States: 0.6926668497665476
+		Dominican-Republic: 1.0
+		Italy: 0.7777777777777778
+		Portugal: 1.0
+		Puerto-Rico: 0.8
+		Canada: 0.6
+		India: 0.6666666666666666
+		?: 0.7397260273972602
+		Haiti: 0.6666666666666666
+		Mexico: 0.6666666666666666
+		Cuba: 0.888888888888889
+		Philippines: 0.8666666666666666
+		Hungary: None
+		Poland: 0.5714285714285715
+		China: 0.7272727272727273
+		Germany: 0.75
+		South: 0.7058823529411764
+		Jamaica: 1.0
+		Ecuador: 0.0
+		Taiwan: 1.0
+		England: 0.6
+		Japan: 0.7142857142857143
+		Guatemala: 1.0
+		El-Salvador: 0.8
+		Vietnam: None
+		Nicaragua: 0.5
+		Peru: None
+		Yugoslavia: None
+		France: None
+		Columbia: 0.0
+		Honduras: None
+		Cambodia: None
+		Trinadad&Tobago: None
+		Iran: 0.6666666666666666
+		Outlying-US(Guam-USVI-etc): None
+		Laos: None
+		Hong: None
+		Thailand: None
+		Greece: None
+		Ireland: None
+		Scotland: None

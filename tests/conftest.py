@@ -138,15 +138,3 @@ def pytest_configure():
     pytest.df_train_test = df_plugin() # we can access & modify pytest.df in test functions!
     pytest.processing_parameters = processing_parameters_plugin()
     pytest.model = model_plugin()
-
-def pytest_addoption(parser):
-    """Add a command line option to disable logger."""
-    parser.addoption(
-        "--log-disable", action="append", default=[], help="disable specific loggers"
-    )
-
-def pytest_configure(config):
-    """Disable the loggers."""
-    for name in config.getoption("--log-disable", default=[]):
-        logger = logging.getLogger(name)
-        logger.propagate = False

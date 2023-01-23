@@ -12,14 +12,23 @@ Date: 2023-01-17
 '''
 
 import pytest
-import logging
+from typing import Generator
+from fastapi.testclient import TestClient
+
+#import logging
 import census_salary as cs
+from census_salary import __version__ as model_lib_version
+from api import __version__ as api_version
+from api.app import API_PROJECT_NAME, INDEX_BODY
+
+# FastAPI app
+from api.app import app
 
 # Fixtures of the census_salary package functions.
 # Fixtures are predefined variables passed to test functions;
 # in this case, most variables are functions/classes to be tested.
 
-## Parameters
+## -- Library Parameters
 
 @pytest.fixture
 def config_filename():
@@ -78,7 +87,7 @@ def num_transformed_features():
     #return 14
     return 108
 
-## Functions
+## Library Functions
 
 @pytest.fixture
 def run_setup():
@@ -105,7 +114,7 @@ def predict():
     '''predict() function from census_library.'''
     return cs.predict
 
-## Variable plug-ins
+## -- Variable plug-ins
 
 def config_dict_plugin():
     '''Initialize pytest project config container as None:
@@ -138,3 +147,108 @@ def pytest_configure():
     pytest.df_train_test = df_plugin() # we can access & modify pytest.df in test functions!
     pytest.processing_parameters = processing_parameters_plugin()
     pytest.model = model_plugin()
+
+### -- API Variables and Functions
+
+# This is the test client, which is passed as a fixture.
+# An easier alternative would be to define the client in the test_ file:
+#   from fastapi.testclient import TestClient
+#   from api.app import app
+#   client = TestClient(app)
+@pytest.fixture()
+def client() -> Generator:
+    """FastAPI test client."""
+    with TestClient(app) as _client:
+        yield _client
+        app.dependency_overrides = {}
+
+@pytest.fixture
+def model_lib_version_string():
+    """Library version."""
+    return model_lib_version
+
+@pytest.fixture
+def api_version_string():
+    """API version."""
+    return api_version
+
+@pytest.fixture
+def api_name_string():
+    """API version."""
+    return API_PROJECT_NAME
+
+@pytest.fixture
+def index_string():
+    """API version."""
+    return INDEX_BODY
+
+@pytest.fixture
+def test_data_single() -> dict:
+    """Test data JSON/dict. Single row."""
+    # This dictionary is the same as in the census library: core.py
+    # Note that the field names and values are the already processed ones:
+    # no blank spaces, _ instead or -
+    d = {
+        "inputs": [
+            {
+                "age": 39,
+                "workclass": "State-gov",
+                "fnlgt": 77516,
+                "education": "Bachelors",
+                "education_num": 13,
+                "marital_status": "Never-married",
+                "occupation": "Adm-clerical",
+                "relationship": "Not-in-family",
+                "race": "White",
+                "sex": "Male",
+                "capital_gain": 2174,
+                "capital_loss": 0,
+                "hours_per_week": 40,
+                "native_country": "United-States"
+            }
+        ]
+    }
+    return d
+
+@pytest.fixture
+def test_data_multiple() -> dict:
+    """Test data JSON/dict. Multiple rows (two)."""
+    # Note that the field names and values are the already processed ones:
+    # no blank spaces, _ instead or -
+    d = {
+        "inputs": [
+            {
+                "age": 39,
+                "workclass": "State-gov",
+                "fnlgt": 77516,
+                "education": "Bachelors",
+                "education_num": 13,
+                "marital_status": "Never-married",
+                "occupation": "Adm-clerical",
+                "relationship": "Not-in-family",
+                "race": "White",
+                "sex": "Male",
+                "capital_gain": 2174,
+                "capital_loss": 0,
+                "hours_per_week": 40,
+                "native_country": "United-States"
+            },
+            {
+                "age": 50,
+                "workclass": "Self-emp-not-inc",
+                "fnlgt": 83311,
+                "education": "Bachelors",
+                "education_num": 13,
+                "marital_status": "Married-civ-spouse",
+                "occupation": "Exec-managerial",
+                "relationship": "Husband",
+                "race": "White",
+                "sex": "Male",
+                "capital_gain": 0,
+                "capital_loss": 0,
+                "hours_per_week": 13,
+                "native_country": "United-States"
+            }
+        ]
+    }
+    return d

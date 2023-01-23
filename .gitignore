@@ -9,6 +9,6 @@ artifacts
 #exported_artifacts/*.pickle
 customer_churn_production
 music_genre_classification
-logs/*
+#logs/*
 build
 census_salary.egg*

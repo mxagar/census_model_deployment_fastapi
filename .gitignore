@@ -6,7 +6,7 @@ vanilla_deployments
 mlops_udacity
 eda_fe_summary
 artifacts
-exported_artifacts/*.pickle
+#exported_artifacts/*.pickle
 customer_churn_production
 music_genre_classification
 logs/*

@@ -31,6 +31,7 @@ Date: 2023-01-23
 """
 
 import json
+from datetime import datetime
 
 from typing import Any
 from fastapi import FastAPI, Request, HTTPException
@@ -126,7 +127,7 @@ async def make_prediction(input_data: MultipleDataRows) -> Any:
         # Pack predictions
         results = PredictionResults(
             model_lib_version = model_lib_version,
-            timestamp = "...",
+            timestamp = str(datetime.now()),
             predictions = list(pred) # pred is np.array, cast it to list
         )
     except ValidationError as error:

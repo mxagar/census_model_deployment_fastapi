@@ -21,4 +21,5 @@ dependencies:
       - flake8
       - setuptools
       - pylint
+      - httpx
       - aequitas

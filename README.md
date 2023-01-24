@@ -1,17 +1,21 @@
 # Census Model Deployment to Heroku Using FastAPI
 
-In this project, a simple census dataset is used to create a model pipeline, train it and deploy it to Heroku using FastAPI. The dataset consists of 32,561 entries of different people, each with 14 features (age, education, etc.) and the model infers the salary range of an entry.
+In this project, a simple census dataset is used to create an inference pipeline, which is trained and deployed to Heroku using FastAPI. The dataset consists of 32,561 entries of different people, each with 14 features (age, education, etc.) and the model infers the salary range of an entry.
 
-I forked the starter code for this project from a Udacity [exercise/demo repository](https://github.com/udacity/nd0821-c3-starter-code) and modified it to the present form.
+I forked the starter code for this project from a Udacity [exercise/demo repository](https://github.com/udacity/nd0821-c3-starter-code) and modified it to the present form, which deviates significantly from the original form.
 
 The focus of this project doesn't lie so much on the data processing, but on the techniques and technologies used for model/pipeline deployment. A list of the most important MLOps methods and tools is the following:
 
-- FastAPI
-- Heroku
-- Type hints and Pydantic
-- Pytest
-- Python packaging
-- DVC
+- [x] Production-level inference pipeline definition
+- [x] Python packaging
+- [x] Logging
+- [x] Continuous Integration with Github Actions and Pytest
+- [x] Python type hints and the use of Pydantic
+- [x] FastAPI to create API apps that run on ASGI web servers
+- [x] Deploying to Heroku
+- [ ] DVC: Data and model version control
+- [ ] Docker containerization
+- [ ] Deploying to AWS ECS
 
 ## Table of Contents
 
@@ -20,24 +24,49 @@ The focus of this project doesn't lie so much on the data processing, but on the
   - [Dataset](#dataset)
   - [How to Use This Project](#how-to-use-this-project)
     - [Installing Dependencies for Custom Environments](#installing-dependencies-for-custom-environments)
-  - [Notes on Theory](#notes-on-theory)
+    - [Running the Packages Locally](#running-the-packages-locally)
+    - [Deploying the Project: Running the Packages on the Cloud](#deploying-the-project-running-the-packages-on-the-cloud)
+  - [Implementation Details](#implementation-details)
     - [Model Card](#model-card)
-    - [Continuous Integration](#continuous-integration)
-    - [Data and Model Versioning](#data-and-model-versioning)
+    - [Census Model Library](#census-model-library)
+    - [Continuous Integration with Github Actions](#continuous-integration-with-github-actions)
     - [Tests](#tests)
     - [FastAPI Application](#fastapi-application)
-    - [Deployment to Heroku](#deployment-to-heroku)
+    - [Continuous Deployment to Heroku](#continuous-deployment-to-heroku)
+    - [Data and Model Versioning](#data-and-model-versioning)
     - [Docker Container](#docker-container)
     - [Deployment to AWS EC2](#deployment-to-aws-ec2)
-    - [Summary of Contents](#summary-of-contents)
   - [Results and Conclusions](#results-and-conclusions)
-  - [Next Steps, Improvements](#next-steps-improvements)
-  - [References and Links](#references-and-links)
+    - [Next Steps, Improvements](#next-steps-improvements)
+    - [Interesting Links](#interesting-links)
   - [Authorship](#authorship)
 
 ## Dataset
 
+The dataset was obtained from the [this Udacity repository](https://github.com/udacity/nd0821-c3-starter-code/tree/master/starter/data).
 
+As specified in the [`config.yaml`](config.yaml) configuration file, we have 14 features, which are divided in numerical and categorical:
+
+```yaml
+numerical:
+- "age"
+- "fnlgt"
+- "education_num"
+- "capital_gain"
+- "capital_loss"
+- "hours_per_week"
+categorical:
+- "workclass"
+- "education"
+- "marital_status"
+- "occupation"
+- "relationship"
+- "race"
+- "sex"
+- "native_country"
+```
+
+The target variable is the `salary` value, which is binary: `<=50K` or `>50K`.
 
 ## How to Use This Project
 
@@ -45,24 +74,24 @@ The directory of the project consists of the following files:
 
 ```
 .
-├── .slugignore
-├── .flake8
-├── .dockerignore
-├── Instructions.md
-├── ModelCard.md
-├── Procfile
-├── README.md
-├── api
+├── .slugignore                         # Heroku app ignore file
+├── .flake8                             # Flake8 linting ignore file
+├── .dockerignore                       # Docker ignore file
+├── Instructions.md                     # Original Udacity instructions
+├── ModelCard.md                        # MODEL CARD
+├── Procfile                            # Heroku launch command
+├── README.md                           # This file
+├── api                                 # FastAPI definition
 │   ├── __init__.py
 │   ├── app.py
 │   └── schemas.py
-├── assets/
-├── census_notebook.ipynb
-├── census_salary
+├── assets/                             # Images & related
+├── census_notebook.ipynb               # Main research notebook
+├── census_salary                       # Package which contains the ML library
 │   ├── __init__.py
+│   ├── README.md                       # Explanation of the library structure
 │   ├── census_library.py
 │   ├── core
-│   │   ├── README.md
 │   │   ├── __init__.py
 │   │   ├── config_example.yaml
 │   │   └── core.py
@@ -73,36 +102,59 @@ The directory of the project consists of the following files:
 │       ├── __init__.py
 │       ├── data_processing.py
 │       └── model.py
-├── conda.yaml
-├── config.yaml
-├── data
+├── conda.yaml                          # Conda research and development environment
+├── config.yaml                         # Project configuration file
+├── data                                # Original dataset
 │   └── census.csv
 ├── exported_artifacts
-│   ├── evaluation_report.txt
-│   ├── model.pickle
-│   ├── processing_parameters.pickle
-│   └── slice_output.txt
-├── Dockerfile
-├── logs
+│   ├── evaluation_report.txt           # Model evaluation with the test split
+│   ├── model.pickle                    # Model artifact
+│   ├── processing_parameters.pickle    # Data processing pipeline artifact
+│   └── slice_output.txt                # Data slicing results
+├── Dockerfile                          # Docker image file
+├── logs                                # Logs (of the library/package)
 │   └── census_pipeline.log
-├── main.py
-├── requirements.txt
-├── runtime.txt
-├── screenshots
+├── main.py                             # Library usage example file
+├── requirements.txt                    # API app dependencies (for CI and CD)
+├── runtime.txt                         # Python version for Heroku
+├── screenshots                         # Final API screenshots
 │   ├── continuous_deployment.png
 │   ├── continuous_integration.png
 │   ├── example.png
 │   ├── live_doc.png
 │   ├── live_get.png
 │   └── live_post.png
-├── setup.py
+├── setup.py                            # Python package setup for census_salary
 ├── starter/
-└── tests
+└── tests                               # Tests: for the library/package and the API app
     ├── __init__.py
     ├── conftest.py
     ├── test_api.py
     └── test_census_library.py
 ```
+
+The project contains the following **central files**:
+
+1. The research notebook [`census_notebook.ipynb `](census_notebook.ipynb), in which the dataset [`data/census.csv`](data) is explored and modeled.
+2. The research code is packaged into a production library in [`census_salary`](census_salary); the library has a [`README.md`](census_salary/README.md) file which explains its structure, if you're interested. The package reads the [`config.yaml`](config.yaml) configuration file and is able to train the inference pipeline, producing the corresponding artifacts to [`exported_artifacts`](exported_artifacts). Then, we can load these and perform inference on new data; an usage example is provided in [`main.py`](main.py).
+3. That package is used in the FastAPI app developed in [`api`](api).
+4. Both packages (the inference library and the API) are tested in [`tests`](tests) using Pytest.
+
+### Installing Dependencies for Custom Environments
+
+If you'd like to run the project locally, you need to create a custom environment and install the required dependencies. A quick recipe which sets everything up with [conda](https://docs.conda.io/en/latest/) is the following:
+
+```bash
+# Create environment with YAML, incl. packages
+conda env create -f conda.yaml
+conda activate census
+```
+
+Note that the [`requirements.txt`](requirements.txt) file is for deployment, not for local development.
+
+### Running the Packages Locally
+
+
 
 You can run the notebook at leas in two ways:
 
@@ -111,23 +163,11 @@ You can run the notebook at leas in two ways:
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mxagar/census_model_deployment_fastapi/blob/master/census_notebook.ipynb)
 
+### Deploying the Project: Running the Packages on the Cloud
 
-### Installing Dependencies for Custom Environments
 
-If you'd like to control where the notebook runs, you need to create a custom environment and install the required dependencies. A quick recipe which sets everything up with [conda](https://docs.conda.io/en/latest/) is the following:
 
-```bash
-# Create environment with YAML, incl. packages
-conda env create -f conda.yaml
-conda activate census
-```
-
-List of most important dependencies:
-
-- A
-- B
-
-## Notes on Theory
+## Implementation Details
 
 ### Model Card
 
@@ -140,7 +180,11 @@ In there, the following topics are covered:
 - Evaluation metrics, data slicing
 - Bias and ethical issues (morel fairness)
 
-### Continuous Integration
+### Census Model Library
+
+
+
+### Continuous Integration with Github Actions
 
 The project uses Github Actions from Github to implement Continuous Integration. In summary, every time we push a new version to Github (or perform a pull request), the package is checked in a custom container running on Github servers:
 
@@ -220,6 +264,14 @@ jobs:
         pytest tests
 ```
 
+### Tests
+
+
+
+### FastAPI Application
+
+### Continuous Deployment to Heroku
+
 ### Data and Model Versioning
 
 The current version of this project does not use any data or model versioning. The dataset is included in the repository and the inference artifacts are not uploaded anywhere. However, in a professional setting and with increasingly larger artifacts, that is not viable. Two easy options to apply versioning to any kind of artifacts are the following: 
@@ -228,31 +280,26 @@ The current version of this project does not use any data or model versioning. T
 
 2. **Weights and Biases**: we can create model and dataset artifacts and upload/download them from the W&B servers. An example of mine where W&B functionalities are used extensible is the following: [music_genre_classification](https://github.com/mxagar/music_genre_classification).
 
-### Tests
-
-
-
-### FastAPI Application
-
-### Deployment to Heroku
 
 ### Docker Container
 
+:construction: To be done...
+
 ### Deployment to AWS EC2
 
-### Summary of Contents
-
-- [ ] A
-- [ ] B
+:construction: To be done...
 
 ## Results and Conclusions
 
-## Next Steps, Improvements
+### Next Steps, Improvements
 
 - [ ] Implement authentication.
 - [ ] Create a simple front-end for the API (e.g., a form).
+- [ ] DVC: Data and model version control
+- [ ] Docker containerization
+- [ ] Deployment to AWS ECS
 
-## References and Links
+### Interesting Links
 
 - A
 - B
@@ -262,7 +309,9 @@ The current version of this project does not use any data or model versioning. T
 
 ## Authorship
 
-Mikel Sagardia, 2022.  
+Mikel Sagardia, 2023.  
 No guarantees.
 
 If you find this repository useful, you're free to use it, but please link back to the original source.
+
+Note that this repository was originally forked from a Udacity [exercise/demo](https://github.com/udacity/nd0821-c3-starter-code); as such, I kept the original [`LICENSE.txt`](LICENSE.txt). However, the modifications done to the project are significant. I would say that basically the [`starter`](starter) folder and the dataset are the only things that I have kept unchanged.

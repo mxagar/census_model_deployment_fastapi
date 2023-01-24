@@ -1,6 +1,6 @@
 # Census Model Deployment to Heroku Using FastAPI
 
-In this project, a simple census dataset is used to create an inference pipeline, which is trained and deployed to Heroku using FastAPI. The dataset consists of 32,561 entries of different people, each with 14 features (age, education, etc.) and the model infers the salary range of an entry.
+In this project, a simple census dataset is used to create an inference pipeline, which is trained and deployed to Heroku (among others) using FastAPI. The dataset consists of 32,561 entries of different people, each with 14 features (age, education, etc.) and the model infers the salary range of an entry.
 
 I forked the starter code for this project from a Udacity [exercise/demo repository](https://github.com/udacity/nd0821-c3-starter-code) and modified it to the present form, which deviates significantly from the original form.
 
@@ -269,10 +269,12 @@ The Github Action/Workflow `python-app.yml` explained in the [Continuous Integra
 
 ### Deploying the Project: Running the Packages on the Cloud
 
-
+The goal of such an API is to be available to several services; if we spin up the API as explained in [The API](#The-API) and our computer IP is accessible to other machines in our intranet, we would be done at the moment. However, the goal is often to publish the API to the internet. To that end, two possible deployments are discussed in dedicated sections:
 
 - [Continuous Deployment to Heroku](#continuous-deployment-to-heroku)
 - [Deployment to AWS ECS](#deployment-to-aws-ecs)
+
+In any case, the API interaction remains the same for the user and all instructions in [The API](#The-API) hold, except the URL needs to be changed.
 
 ## More Implementation Details
 

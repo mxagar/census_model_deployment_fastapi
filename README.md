@@ -45,6 +45,9 @@ The directory of the project consists of the following files:
 
 ```
 .
+├── .slugignore
+├── .flake8
+├── .dockerignore
 ├── Instructions.md
 ├── ModelCard.md
 ├── Procfile
@@ -53,7 +56,7 @@ The directory of the project consists of the following files:
 │   ├── __init__.py
 │   ├── app.py
 │   └── schemas.py
-├── assets
+├── assets/
 ├── census_notebook.ipynb
 ├── census_salary
 │   ├── __init__.py
@@ -79,44 +82,26 @@ The directory of the project consists of the following files:
 │   ├── model.pickle
 │   ├── processing_parameters.pickle
 │   └── slice_output.txt
+├── Dockerfile
 ├── logs
 │   └── census_pipeline.log
 ├── main.py
 ├── requirements.txt
 ├── runtime.txt
 ├── screenshots
+│   ├── continuous_deployment.png
+│   ├── continuous_integration.png
+│   ├── example.png
+│   ├── live_doc.png
+│   ├── live_get.png
+│   └── live_post.png
 ├── setup.py
-├── starter
-│   ├── README.md
-│   ├── data
-│   │   └── census.csv
-│   ├── dvc_on_heroku_instructions.md
-│   ├── main.py
-│   ├── model
-│   ├── model_card_template.md
-│   ├── requirements.txt
-│   ├── sanitycheck.py
-│   ├── screenshots
-│   ├── setup.py
-│   └── starter
-│       ├── __init__.py
-│       ├── ml
-│       │   ├── __init__.py
-│       │   ├── data.py
-│       │   └── model.py
-│       └── train_model.py
-├── tests
-│   ├── __init__.py
-│   ├── __pycache__
-│   │   ├── __init__.cpython-38.pyc
-│   │   ├── conftest.cpython-38-pytest-7.2.0.pyc
-│   │   ├── test_api.cpython-38-pytest-7.2.0.pyc
-│   │   ├── test_api.cpython-38.pyc
-│   │   └── test_census_library.cpython-38-pytest-7.2.0.pyc
-│   ├── conftest.py
-│   ├── test_api.py
-│   └── test_census_library.py
-└── vanilla_deployments -> /Users/mxagar/git_repositories/vanilla_deployments
+├── starter/
+└── tests
+    ├── __init__.py
+    ├── conftest.py
+    ├── test_api.py
+    └── test_census_library.py
 ```
 
 You can run the notebook at leas in two ways:

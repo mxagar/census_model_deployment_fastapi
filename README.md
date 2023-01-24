@@ -9,13 +9,15 @@ The focus of this project doesn't lie so much on the data processing, but on the
 - [x] Production-level inference pipeline definition
 - [x] Python packaging
 - [x] Logging
+- [x] Performance tests: pytest, data slicing, etc.
+- [x] Bias and fairness analysis with [Aequitas](http://aequitas.dssg.io)
 - [x] Continuous Integration with Github Actions and Pytest
 - [x] Python type hints and the use of Pydantic
 - [x] FastAPI to create API apps that run on ASGI web servers
-- [x] Deploying to Heroku
+- [x] Continuous Deployment to Heroku
 - [ ] DVC: Data and model version control
 - [ ] Docker containerization
-- [ ] Deploying to AWS ECS
+- [ ] Deployment to AWS ECS
 - [ ] Experiment tracking
 
 This project serves also as a **blueprint for similar inference pipelines that need to be deployed using CI and CD techniques.** Therefore, implementation details have been carefully collected.
@@ -134,10 +136,10 @@ The directory of the project consists of the following files:
 │   ├── live_get.png
 │   └── live_post.png
 ├── setup.py                            # Python package setup for census_salary
-├── starter/
+├── starter/                            # Original starter code from Udacity
 └── tests                               # Tests: for the library/package and the API app
     ├── __init__.py
-│   ├── README.md                       # Explanation of the test folder structure
+    ├── README.md                       # Explanation of the test folder structure
     ├── conftest.py
     ├── test_api.py
     └── test_census_library.py
@@ -386,6 +388,8 @@ jobs:
 ### Continuous Deployment to Heroku
 
 :construction: To be done...
+
+- Enable automatic deployment; Github screenshot (environments), etc.
 
 ### Data and Model Versioning
 

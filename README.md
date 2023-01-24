@@ -24,6 +24,7 @@ The focus of this project doesn't lie so much on the data processing, but on the
     - [Model Card](#model-card)
     - [Continuous Integration](#continuous-integration)
     - [Data and Model Versioning](#data-and-model-versioning)
+    - [Tests](#tests)
     - [FastAPI Application](#fastapi-application)
     - [Deployment to Heroku](#deployment-to-heroku)
     - [Docker Container](#docker-container)
@@ -44,8 +45,78 @@ The directory of the project consists of the following files:
 
 ```
 .
-├── Instructions.md           # Original challenge instructions
-...
+├── Instructions.md
+├── ModelCard.md
+├── Procfile
+├── README.md
+├── api
+│   ├── __init__.py
+│   ├── app.py
+│   └── schemas.py
+├── assets
+├── census_notebook.ipynb
+├── census_salary
+│   ├── __init__.py
+│   ├── census_library.py
+│   ├── core
+│   │   ├── README.md
+│   │   ├── __init__.py
+│   │   ├── config_example.yaml
+│   │   └── core.py
+│   ├── data
+│   │   ├── __init__.py
+│   │   └── dataset.py
+│   └── ml
+│       ├── __init__.py
+│       ├── data_processing.py
+│       └── model.py
+├── conda.yaml
+├── config.yaml
+├── data
+│   └── census.csv
+├── exported_artifacts
+│   ├── evaluation_report.txt
+│   ├── model.pickle
+│   ├── processing_parameters.pickle
+│   └── slice_output.txt
+├── logs
+│   └── census_pipeline.log
+├── main.py
+├── requirements.txt
+├── runtime.txt
+├── screenshots
+├── setup.py
+├── starter
+│   ├── README.md
+│   ├── data
+│   │   └── census.csv
+│   ├── dvc_on_heroku_instructions.md
+│   ├── main.py
+│   ├── model
+│   ├── model_card_template.md
+│   ├── requirements.txt
+│   ├── sanitycheck.py
+│   ├── screenshots
+│   ├── setup.py
+│   └── starter
+│       ├── __init__.py
+│       ├── ml
+│       │   ├── __init__.py
+│       │   ├── data.py
+│       │   └── model.py
+│       └── train_model.py
+├── tests
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-38.pyc
+│   │   ├── conftest.cpython-38-pytest-7.2.0.pyc
+│   │   ├── test_api.cpython-38-pytest-7.2.0.pyc
+│   │   ├── test_api.cpython-38.pyc
+│   │   └── test_census_library.cpython-38-pytest-7.2.0.pyc
+│   ├── conftest.py
+│   ├── test_api.py
+│   └── test_census_library.py
+└── vanilla_deployments -> /Users/mxagar/git_repositories/vanilla_deployments
 ```
 
 You can run the notebook at leas in two ways:
@@ -158,8 +229,8 @@ jobs:
     - name: Test with pytest
       run: |
         # Create a logs file
-        mkdir logs
-        touch logs/census_pipeline.log
+        #mkdir logs
+        #touch logs/census_pipeline.log
         # Test
         pytest tests
 ```
@@ -171,6 +242,8 @@ The current version of this project does not use any data or model versioning. T
 1. **DVC**: We can define remote storage folders (e.g., in GDrive, S3, etc.) and upload large datasets to them while ignoring them in git. DVC requires a buildpack for Heroku, as explained in the [`starter`](starter) folder. Check my [notes on DVC](https://github.com/mxagar/mlops_udacity/blob/main/03_Deployment/MLOpsND_Deployment.md#3-data-and-model-versioning) for more information.
 
 2. **Weights and Biases**: we can create model and dataset artifacts and upload/download them from the W&B servers. An example of mine where W&B functionalities are used extensible is the following: [music_genre_classification](https://github.com/mxagar/music_genre_classification).
+
+### Tests
 
 
 

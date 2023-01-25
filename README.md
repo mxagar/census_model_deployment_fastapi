@@ -1,6 +1,8 @@
 # Census Model Deployment to Heroku Using FastAPI
 
-In this project, a simple census dataset is used to create an inference pipeline, which is trained and deployed to Heroku (among others) using FastAPI. The dataset consists of 32,561 entries of different people, each with 14 features (age, education, etc.) and the model infers the salary range of an entry.
+In this project, a simple census dataset is used to create an inference pipeline, which is trained and deployed to Heroku (among others) using FastAPI. The dataset consists of 32,561 entries of different people, each with 14 features (age, education, etc.) and the model infers the salary range of an entry. You can try the API here:
+
+[https://census-salary-model.herokuapp.com](https://census-salary-model.herokuapp.com)
 
 I forked the starter code for this project from a Udacity [exercise/demo repository](https://github.com/udacity/nd0821-c3-starter-code) and modified it to the present form, which deviates significantly from the original form.
 
@@ -434,10 +436,11 @@ In the following, some possible improvements are outlined and related links are 
 
 - [ ] Implement authentication.
 - [ ] Create a simple front-end for the API (e.g., a form).
-- [ ] Use DVC: Data and model version control.
+- [ ] Use DVC: Data and model version control. A similar repository where this is done: [theyorubayesian/cliffhanger](https://github.com/theyorubayesian/cliffhanger).
 - [ ] Implement Docker containerization.
 - [ ] Deployment to AWS ECS using the Docker image.
 - [ ] Implement experiment tracking, e.g., with [Weights and Biases](https://wandb.ai/site).
+- [ ] Use Pydantic `alias_generator` to parse field names as desired; see: [parsing field names](https://github.com/mxagar/mlops_udacity/blob/main/03_Deployment/MLOpsND_Deployment.md#parsing-field-names).
 
 ### Interesting Links
 

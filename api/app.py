@@ -68,10 +68,17 @@ INDEX_BODY = (
 )
 
 # Load model pipeline: model + data processing
-model, processing_parameters, config = load_pipeline(config_filename=CONFIG_FILENAME)
+# We can load them in the global scope like this:
+#   model, processing_parameters, config = load_pipeline(config_filename=CONFIG_FILENAME)
+# OR, we can use the @app.on_event("startup") functionality below (recommended approach)
 
 # FastAPI app
 app = FastAPI(title=API_PROJECT_NAME)
+
+@app.on_event("startup")
+async def startup_event(): 
+    global model, processing_parameters, config
+    model, processing_parameters, config = load_pipeline(config_filename=CONFIG_FILENAME)
 
 @app.get("/")
 def index(request: Request) -> Any:
@@ -92,6 +99,9 @@ def health() -> dict:
     )
 
     # Convert to dict and return
+    # We can export any Pydantic model/class
+    # as a dictionary that way:
+    # https://docs.pydantic.dev/usage/exporting_models/
     return health.dict()
 
 # When a the returned object is a Pydantic model/class/object, we define: 

@@ -472,6 +472,22 @@ Other links:
 - [Heroku Pricing](https://www.heroku.com/pricing)
 - [Git-subtree](https://www.atlassian.com/git/tutorials/git-subtree)
 - [Heroku Procfile docs](https://devcenter.heroku.com/articles/procfile)
+- [Managing your machine learning lifecycle with MLflow and Amazon SageMaker](https://aws.amazon.com/blogs/machine-learning/managing-your-machine-learning-lifecycle-with-mlflow-and-amazon-sagemaker/)
+- [MLflow and Azure Machine Learning](https://learn.microsoft.com/en-us/azure/machine-learning/concept-mlflow)
+- Test whether a model has been fitted or not: [Stackoverflow: What's the best way to test whether an sklearn model has been fitted?](https://stackoverflow.com/questions/39884009/whats-the-best-way-to-test-whether-an-sklearn-model-has-been-fitted)
+- [Effective testing for machine learning systems](https://www.jeremyjordan.me/testing-ml/)
+- [Machine Learning Testing: A Step to Perfection](https://serokell.io/blog/machine-learning-testing)
+- [Test-Driven Development in MLOps Part 1](https://medium.com/mlops-community/test-driven-development-in-mlops-part-1-8894575f4dec)
+- Performance monitoring in production (e.g., data slicing):
+  - [Azure: Collect data from models in production](https://learn.microsoft.com/en-us/azure/machine-learning/v1/how-to-enable-data-collection)
+  - [AWS SageMaker: Monitor models for data and model quality, bias, and explainability](https://docs.aws.amazon.com/sagemaker/latest/dg/model-monitor.html)
+- Nice model card example: [Hugging Face BERT uncased](https://huggingface.co/bert-base-uncased)
+- A similar project where DVC is used: [theyorubayesian/cliffhanger](https://github.com/theyorubayesian/cliffhanger)
+- [5 Big Differences Separating API Testing From Unit Testing](https://methodpoet.com/api-testing-vs-unit-testing/)
+- [Why is it Important to Monitor Machine Learning Models?](https://mlinproduction.com/why-is-it-important-to-monitor-machine-learning-models/)
+- [Exporting Pydantic Models as Dictionaries](https://docs.pydantic.dev/usage/exporting_models/)
+- [When Do You Use an Ellipsis in Python?](https://realpython.com/python-ellipsis/)
+- [Events: startup - shutdown](https://fastapi.tiangolo.com/advanced/events/)
 
 ## Authorship
 

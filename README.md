@@ -255,6 +255,7 @@ d = {
 
 # POST input JSON to API and wait or response
 r = requests.post("http://127.0.0.1:8000/predict", data=json.dumps(d))
+print(r.status_code) # 200
 print(r.json())
 # {'model_lib_version': '0.0.1', 'timestamp': '2023-01-23 17:07:10.403670', 'predictions': ['<=50K']}
 print(r.json()['predictions']) # ['<=50K']
@@ -277,7 +278,15 @@ The goal of such an API is to be available to several services; if we spin up th
 - [Continuous Deployment to Heroku](#continuous-deployment-to-heroku)
 - [Deployment to AWS ECS](#deployment-to-aws-ecs)
 
-In any case, the API interaction remains the same for the user and all instructions in [The API](#The-API) hold, except the URL needs to be changed.
+In any case, the API interaction remains the same for the user and all instructions in [The API](#The-API) section hold, except the URL needs to be changed. The script [`live_api_example.py`](live_api_example.py) shows how we would make the calls; if the API deployed on Heroku is up, we can run that script and get results:
+
+```python
+python live_api_example.py
+```
+
+To spin up the remote API, we need to wake it by opening the URL in the browser; the `dyno` goes to sleep after 30 minutes of inactivity:
+
+`https://census-salary-model.herokuapp.com`
 
 ## More Implementation Details
 

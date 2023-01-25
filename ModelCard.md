@@ -111,7 +111,7 @@ The test split produces the following scores:
 
 All these metrics are persisted in the automatically generated file [`./exported_artifacts/evaluation_report.txt`](./exported_artifacts/evaluation_report.txt).
 
-**Data splicing** is applied on all features; numerical columns are sliced at the median (equal or above, below) and categorical columns are sliced at each category. The automatically generated file [`./exported_artifacts/slice_report.txt`](./exported_artifacts/slice_report.txt).
+**Data splicing** is applied on all features; numerical columns are sliced at the median (equal or above, below) and categorical columns are sliced at each category. The automatically generated file [`./exported_artifacts/slice_output.txt`](./exported_artifacts/slice_output.txt).
 
 Finally, the following figure shows the ROC curve of the model using the test split:
 

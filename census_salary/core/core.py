@@ -230,6 +230,8 @@ def validate_data(df: pd.DataFrame) -> Tuple[pd.DataFrame, Optional[dict]]:
     # Rename column names
     # - remove preceding blank space: ' education' -> 'education', etc.
     # - replace - with _: 'education-num' -> 'education_num', etc.
+    #FIXME: A better/recommended alternative is using the Pydantic alias_generator; see:
+    # https://github.com/mxagar/mlops_udacity/blob/main/03_Deployment/MLOpsND_Deployment.md#parsing-field-names
     #df_validated = df.copy()
     #data = df.copy()
     df = df.rename(

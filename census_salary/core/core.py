@@ -256,6 +256,9 @@ def validate_data(df: pd.DataFrame) -> Tuple[pd.DataFrame, Optional[dict]]:
     errors = None
     try:
         # Replace numpy nans so that pydantic can validate
+        # Note that the MultipleDataRows object is not used after creating it,
+        # we simply instantiate it to check that the dataframe is conform
+        # with the fields in MultipleDataRows
         MultipleDataRows(
             inputs=df_validated.replace({np.nan: None}).to_dict(orient="records")
         )
@@ -285,6 +288,9 @@ def load_validate_config(
         with open(config_filename) as f: # 'config.yaml'
             config = yaml.safe_load(f)
             # Convert dictionary to Config class to validate it
+            # Note that the GeneralConfig object is not used after creating it,
+            # we simply instantiate if to check that the config file is conform
+            # with the fields in GeneralConfig
             _ = GeneralConfig(**config)
     except FileNotFoundError as e:
         logger.error("Configuration YAML not found: %s.", config_filename)
@@ -316,6 +322,10 @@ def load_validate_processing_parameters(
         with open(processing_artifact, 'rb') as f: # 'exported_artifacts/processing_parameters.pickle'
             processing_parameters = pickle.load(f)
             # Convert dictionary to ProcessingParameters class to validate it
+            # Note that the ProcessingParameters object is not used after creating it,
+            # we simply instantiate it to check that the
+            # processing_parameters dictionary is conform
+            # with the fields in ProcessingParameters
             _ = ProcessingParameters(**processing_parameters)
     except FileNotFoundError as e:
         logger.error("Processing parameters artifact/pickle not found: %s.", processing_artifact)

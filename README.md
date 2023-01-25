@@ -127,7 +127,8 @@ The directory of the project consists of the following files:
 │   └── census_pipeline.log
 ├── main.py                             # Library usage example file
 ├── requirements.txt                    # API app dependencies (for CI and CD)
-├── runtime.txt                         # Python version for Heroku
+├── run.sh                              # Python version for Heroku
+├── runtime.txt                         # Run command for docker container
 ├── screenshots                         # Final API screenshots
 │   ├── continuous_deployment.png
 │   ├── continuous_integration.png
@@ -431,6 +432,8 @@ In the following, some possible improvements are outlined and related links are 
 
 ### Interesting Links
 
+My notes:
+
 - My guide on CI/DC: [cicd_guide](https://github.com/mxagar/cicd_guide)
 - My boilerplate for reproducible ML pipelines using [MLflow](https://www.mlflow.org/) and [Weights & Biases](https://wandb.ai/site): [music_genre_classification](https://github.com/mxagar/music_genre_classification).
 - My personal notes on the [Udacity MLOps](https://www.udacity.com/course/machine-learning-dev-ops-engineer-nanodegree--nd0821) nanodegree: [mlops_udacity](https://github.com/mxagar/mlops_udacity); example and exercise repository related to this project: [mlops-udacity-deployment-demos](https://github.com/mxagar/mlops-udacity-deployment-demos).
@@ -438,6 +441,25 @@ In the following, some possible improvements are outlined and related links are 
 - Notes on how to transform research code into production-level packages: [customer_churn_production](https://github.com/mxagar/customer_churn_production).
 - My summary of data processing and modeling techniques: [eda_fe_summary](https://github.com/mxagar/eda_fe_summary).
 - My notes on the Udemy course [Deployment of Machine Learning Models](https://www.udemy.com/course/deployment-of-machine-learning-models) by Soledad Galli & Christopher Samiullah: [deploying-machine-learning-models](https://github.com/mxagar/deploying-machine-learning-models).
+
+Other links:
+
+- [curl documentation](https://curl.se/docs/)
+- [Understanding REST APIs](https://www.smashingmagazine.com/2018/01/understanding-using-rest-api/)
+- [Pre-requisites for installing Microservices](https://martinfowler.com/bliki/MicroservicePrerequisites.html)
+- [FastAPI](https://fastapi.tiangolo.com/)
+- [Asyncio](https://docs.python.org/3/library/asyncio.html)
+- [Type hints](https://docs.python.org/3/library/typing.html)
+- [Packaging Python Projects](https://packaging.python.org/en/latest/tutorials/packaging-projects/)
+- [Pydantic](https://pydantic-docs.helpmanual.io/)
+- [Python Package Index](https://pypi.org/)
+- [OpenAPI](https://swagger.io/specification/)
+- [Standard logging library documentation](https://docs.python.org/3/library/logging.html)
+- [Loguru Intercept](https://loguru.readthedocs.io/en/stable/overview.html#entirely-compatible-with-standard-logging)
+- [Uvicorn](https://www.uvicorn.org/)
+- [Heroku Pricing](https://www.heroku.com/pricing)
+- [Git-subtree](https://www.atlassian.com/git/tutorials/git-subtree)
+- [Heroku Procfile docs](https://devcenter.heroku.com/articles/procfile)
 
 ## Authorship
 

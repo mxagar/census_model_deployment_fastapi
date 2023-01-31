@@ -1,0 +1,17 @@
+version: '3.1'
+# Same as 
+#   docker run -p 8001:8001 -e PORT=8001 census_model_api:latest
+# Run as
+#   docker-compose up -d
+# Check containers, logs
+#   docker-compose ps
+#   docker-compose logs
+# Stop containers
+#   docker-compose down
+services:
+  census_model_api:
+    image: census_model_api:latest
+    ports:
+      - '8001:8001'
+    environment:
+      - 'PORT=8001'

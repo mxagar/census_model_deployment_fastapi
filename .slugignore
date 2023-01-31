@@ -5,3 +5,13 @@ data/census.csv
 tests
 main.py
 starter
+.vscode
+.pytest_cache
+.DS_Store
+.ipynb_checkpoints
+mlops_udacity
+eda_fe_summary
+customer_churn_production
+music_genre_classification
+build
+census_salary.egg*

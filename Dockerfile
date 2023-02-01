@@ -28,8 +28,8 @@ USER ml-api-user
 EXPOSE 8001
 
 # Run web server, started by run.sh
+# uvicorn api.app:app --host=0.0.0.0 --port=${PORT:-5000}
 CMD ["bash", "./run.sh"]
-
 
 # Build the Dockerfile to create the image
 # docker build -t <image_name[:version]> <path/to/Dockerfile>

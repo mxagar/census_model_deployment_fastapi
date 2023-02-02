@@ -1,6 +1,6 @@
 # Census Model Deployment to Heroku Using FastAPI
 
-In this project, a simple census dataset is used to create an inference pipeline, which is trained and deployed to Heroku (among others) using FastAPI. The dataset consists of 32,561 entries of different people, each with 14 features (age, education, etc.) and the model infers the salary range of an entry. You can try the API here:
+In this project, a simple census dataset is used to create an inference pipeline, which is trained and deployed to Heroku (among others) using FastAPI. The dataset consists of 32,561 entries of different people, each with 14 features (age, education, etc.) and the model infers the salary range of an entry. **You can try the API here** (you might need to wait a bit the first time until the app awakens):
 
 [https://census-salary-model.herokuapp.com](https://census-salary-model.herokuapp.com)
 
@@ -16,10 +16,11 @@ The focus of this project doesn't lie so much on the data processing, but on the
 - [x] Continuous Integration with Github Actions and Pytest
 - [x] Python type hints and the use of Pydantic
 - [x] FastAPI to create API apps that run on ASGI web servers
-- [x] Continuous Deployment to Heroku
-- [ ] DVC: Data and model version control
+- [x] Continuous Deployment to Heroku Using Github
 - [ ] Docker containerization
+- [ ] Deployment to Heroku Using the Heroku Container Registry
 - [ ] Deployment to AWS ECS
+- [ ] DVC: Data and model version control
 - [ ] Experiment tracking
 
 This project serves also as a **blueprint for similar inference pipelines that need to be deployed using CI and CD techniques.** Therefore, implementation details have been carefully collected.
@@ -434,10 +435,10 @@ In the following, some possible improvements are outlined and related links are 
 
 ### Next Steps, Improvements
 
+- [x] Implement Docker containerization.
 - [ ] Implement authentication.
 - [ ] Create a simple front-end for the API (e.g., a form).
 - [ ] Use DVC: Data and model version control. A similar repository where this is done: [theyorubayesian/cliffhanger](https://github.com/theyorubayesian/cliffhanger).
-- [ ] Implement Docker containerization.
 - [ ] Deployment to AWS ECS using the Docker image.
 - [ ] Implement experiment tracking, e.g., with [Weights and Biases](https://wandb.ai/site).
 - [ ] Use Pydantic `alias_generator` to parse field names as desired; see: [parsing field names](https://github.com/mxagar/mlops_udacity/blob/main/03_Deployment/MLOpsND_Deployment.md#parsing-field-names).

@@ -1,12 +1,12 @@
 # Census Model Deployment to Heroku Using FastAPI
 
-In this project, a simple census dataset is used to create an inference pipeline, which is trained and deployed to Heroku (among others) using FastAPI. The dataset consists of 32,561 entries of different people, each with 14 features (age, education, etc.) and the model infers the salary range of an entry. **You can try the API here** (you might need to wait a bit the first time until the app awakens):
+In this project, a simple census dataset is used to create an inference pipeline, which is trained and deployed to Heroku and AWS ECS using FastAPI. The dataset consists of 32,561 entries of different people, each with 14 features (age, education, etc.) and the model infers the salary range of an entry. **You can try the API here** (you might need to wait a bit the first time until the app awakens):
 
 [https://census-salary-model.herokuapp.com](https://census-salary-model.herokuapp.com)
 
 I forked the starter code for this project from a Udacity [exercise/demo repository](https://github.com/udacity/nd0821-c3-starter-code) and modified it to the present form, which deviates significantly from the original form.
 
-The focus of this project doesn't lie so much on the data processing, but on the techniques and technologies used for model/pipeline deployment. A list of the most important MLOps methods and tools is the following:
+The focus of this project doesn't lie so much on the data processing, but on the techniques and technologies used for model/pipeline deployment. A list of the most important MLOps methods and tools used is the following:
 
 - [x] Production-level inference pipeline definition
 - [x] Python packaging
@@ -17,9 +17,9 @@ The focus of this project doesn't lie so much on the data processing, but on the
 - [x] Python type hints and the use of Pydantic
 - [x] FastAPI to create API apps that run on ASGI web servers
 - [x] Continuous Deployment to Heroku Using Github
-- [ ] Docker containerization
-- [ ] Deployment to Heroku Using the Heroku Container Registry
-- [ ] Deployment to AWS ECS
+- [x] Docker containerization
+- [x] Deployment to Heroku Using the Heroku Container Registry
+- [x] Deployment to AWS ECS
 - [ ] DVC: Data and model version control
 - [ ] Experiment tracking
 
@@ -90,6 +90,7 @@ The directory of the project consists of the following files:
 ├── .flake8                             # Flake8 linting ignore file
 ├── .dockerignore                       # Docker ignore file
 ├── .github/                            # CI workflows (Github Actions)
+├── Dockerfile                          # Docker image file
 ├── Instructions.md                     # Original Udacity instructions
 ├── ModelCard.md                        # MODEL CARD
 ├── Procfile                            # Heroku launch command
@@ -120,19 +121,22 @@ The directory of the project consists of the following files:
 ├── config.yaml                         # Project configuration file
 ├── data                                # Original dataset
 │   └── census.csv
+├── docker-compose.yaml                 # Docker compose YAML script
 ├── exported_artifacts
 │   ├── evaluation_report.txt           # Model evaluation with the test split
 │   ├── model.pickle                    # Model artifact
 │   ├── processing_parameters.pickle    # Data processing pipeline artifact
 │   └── slice_output.txt                # Data slicing results
-├── Dockerfile                          # Docker image file
+├── live_api_example.py                 # Script which connects to the deployed API
 ├── logs                                # Logs (of the library/package)
 │   └── census_pipeline.log
 ├── main.py                             # Library usage example file
+├── push_to_ecr.sh                      # Script to build image and push to AWS ECR
+├── push_to_heroku.sh                   # Script to build image and push to Heroku registry
 ├── requirements.txt                    # API app dependencies (for CI and CD)
 ├── run.sh                              # Python version for Heroku
 ├── runtime.txt                         # Run command for docker container
-├── screenshots                         # Final API screenshots
+├── screenshots                         # Final API screenshots (Heroku)
 │   ├── continuous_deployment.png
 │   ├── continuous_integration.png
 │   ├── example.png

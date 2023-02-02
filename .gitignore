@@ -12,3 +12,5 @@ music_genre_classification
 #logs/*
 build
 census_salary.egg*
+ecs-admin_accessKeys.csv
+ecs-admin_credentials.csv

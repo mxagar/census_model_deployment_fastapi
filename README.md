@@ -170,7 +170,7 @@ conda env create -f conda.yaml
 conda activate census
 ```
 
-Note that the [`requirements.txt`](requirements.txt) file is for deployment, not for local development.
+Note that the [`requirements.txt`](requirements.txt) file contains the minimum necessary packages for deployment, whereas [`conda.yaml`](conda.yaml) is for setting up the local development environment (e.g., jupyter notebooks is included).
 
 ### Running the Packages Locally
 
@@ -293,7 +293,7 @@ python live_api_example.py
 
 To spin up the remote API, we need to wake it by opening the URL in the browser; the `dyno` goes to sleep after 30 minutes of inactivity:
 
-`https://census-salary-model.herokuapp.com`
+[`https://census-salary-model.herokuapp.com`](https://census-salary-model.herokuapp.com)
 
 ## More Implementation Details
 
@@ -312,15 +312,17 @@ In there, the following topics are covered:
 
 ### FastAPI Application: API
 
-:construction: To be done...
+The API is defined in [`api`](api), where there is a [`README.md`](api/README.md) with endpoint usage examples.
+
+If you're interested in more details on how to build such APIs, check my notes in [MLOpsND_Deployment.md](https://github.com/mxagar/mlops_udacity/blob/main/03_Deployment/MLOpsND_Deployment.md#5-api-deployment-with-fastapi).
 
 ### Census Model Library
 
-:construction: To be done...
+The census modeling is implemented in an isolated package for modular and easier use. In the package folder `census_salary`, there is a [`README.md`](./census_salary/README.md) file which explains the package structure and provides with usage exanples.
 
 ### Testing with Pytest
 
-:construction: To be done...
+Both the [census library](#census-model-library) and the [API](#fastapi-application-api) are tested using [Pytest](https://docs.pytest.org/en/7.2.x/). The folder [`tests`](./tests) contains the implementation modules and a [`README.md`](./tests/README.md) with further explanations.
 
 ### Continuous Integration with Github Actions
 

@@ -295,6 +295,8 @@ To spin up the remote API, we need to wake it by opening the URL in the browser;
 
 [`https://census-salary-model.herokuapp.com`](https://census-salary-model.herokuapp.com)
 
+![Census Model API Heroku](./screenshots/live_doc.png)
+
 ## More Implementation Details
 
 This section summarizes details beyond the usage of the project. The goal is to provide enough background to re-use the structure of this repository for similar ML applications.
@@ -355,6 +357,8 @@ Github repository > Actions > All workflows: Python application >
     Select desired run > Jobs: build
 ```
 
+![Continuous Integration](./screenshots/continuous_integration.png)
+
 The final `python-app.yml` YAML is stored and committed to `.github/workflows`, and its content is the following:
 
 ```yaml
@@ -406,9 +410,39 @@ jobs:
 
 ### Continuous Deployment to Heroku
 
-:construction: To be done...
+The app deployed on Heroku can be accessed at 
 
-- Enable automatic deployment; Github screenshot (environments), etc.
+[https://census-salary-model.herokuapp.com](https://census-salary-model.herokuapp.com)
+
+Heroku is a cloud platform which enables several deployment methods; here two are implemented:
+
+- Github connection with continuous deployment.
+- Container registry with Heroku CLI.
+
+The **Github connection** method is the easiest one: we create the app, e.g., using the Heroku web interface, and connect our Github repository to it. Then, we need to check two options in the *automatic deploys* tab:
+
+- *Wait for CI to pass before deploy*: with this option, the tests defined in `python-app.yml` will need to pass.
+- *Enable Automatic Deploys*: when the tests pass, the app will be deployed and accessible on Heroku.
+
+With that, we have an app which follows the CI/CD methodology!
+
+![Continuous Deployment](./screenshots/continuous_deployment.png)
+
+*Note*: Since the Heroku app (aka. *slug*) is limited in terms or memory and disk space, we can specify  in the file [`.sligignore`](.slugignore) which files don't need to be deployed (e.g., notebooks, datasets, etc.).
+
+The **Container registry** method is more complex but allows for more flexibility. However, continuous deployment is not as straightforward. To use it we need to:
+
+- Select the *Container registry* method when creating the app on Heroku.
+- Create a docker image, as explained in the section [Docker Container](#docker-container).
+- Push the docker image to Heroku using the Heroku CLI and release the app. For this last step, the required commands are summarized in [`push_to_heroku.sh`](./push_to_heroku.sh), which can be run if all the requirements are met (i.e., [docker engine](https://docs.docker.com/engine/) and [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli) installed):
+
+  ```bash
+  $ heroku login
+  $ ./push_to_heroku.sh
+  ```
+*Note*: The docker build commands in [`push_to_heroku.sh`](./push_to_heroku.sh) are optimized for Mac computers with an Apple silicon (M1/M2).
+
+For more information on how to deploy to Heroku, check my notes in [`MLOpsND_Deployment.md`](https://github.com/mxagar/mlops_udacity/blob/main/03_Deployment/MLOpsND_Deployment.md#44-continuous-deployment-with-heroku)
 
 ### Data and Model Versioning
 
@@ -420,11 +454,85 @@ The current version of this project does not use any data or model versioning. T
 
 ### Docker Container
 
-:construction: To be done...
+The app docker image is defined in [`Dockerfile`](Dockerfile); additionally, we need to consider the [`.dockerignore`](.dockerignore) file, which is the equivalent to [`.gitignore`], but when building images. The reason is because image sizes increase fast, and cloud space can become expensive.
+
+To build the image and and run the container, we can follow these commands:
+
+```bash
+# Build the Dockerfile to create the image
+# docker build -t <image_name[:version]> <path/to/Dockerfile>
+docker build -t census_model_api:latest .
+ 
+# Check the image is there: watch the size (e.g., ~1GB)
+docker image ls
+
+# Run the container locally from a built image
+# Recall to: forward ports (-p) and pass PORT env variable (-e), because run.sh expects it!
+# Optional: 
+# -d to detach/get the shell back,
+# --name if we want to choose conatiner name (else, one randomly chosen)
+# --rm: automatically remove container after finishing (irrelevant in our case, but...)
+docker run -d --rm -p 8001:8001 -e PORT=8001 --name census_model_app census_model_api:latest
+
+# Check the API locally: open the browser
+#   http://localhost:8001
+#   Use the web API
+ 
+# Check the running containers: check the name/id of our container,
+# e.g., census_model_app
+docker container ls
+docker ps
+
+# Get a terminal into the container: in general, BAD practice
+# docker exec -it <id|name> sh
+docker exec -it census_model_app sh
+# (we get inside)
+cd /opt/census_model
+ls
+cat logs/census_pipeline.log
+exit
+
+# Stop container and remove it (erase all files in it, etc.)
+# docker stop <id/name>
+# docker rm <id/name>
+docker stop census_model_app
+docker rm census_model_app
+```
+
+We can document and automate the build and run process using `docker-compose`; to that end, we need to define the [`docker-compose.yaml`](docker-compose.yaml) file and run it as follows:
+
+```bash
+# Run contaner(s), detached; local docker-compose.yaml is used
+docker-compose up -d
+
+# Check containers, logs
+docker-compose ps
+docker-compose logs
+
+# Stop containers
+docker-compose down
+```
+
+*Note*: The deployment to Heroku pr AWS ECR is automated in the files [`push_to_heroku.sh`](./push_to_heroku.sh) and [`push_to_ecr.sh`](./push_to_ecr.sh), respectively. Those build the images in a slightly different manner, targeting the Mac architecture and the cloud platform.
+
+For more information on how to dockerize an application, check my notes in [`MLOpsND_Deployment.md`](https://github.com/mxagar/mlops_udacity/blob/main/03_Deployment/MLOpsND_Deployment.md#7-excurs-dockerization).
 
 ### Deployment to AWS ECS
 
-:construction: To be done...
+The deployment of a dockerized application to AWS ECR and using Fargate is essentially not complex, but requires to cover many details; therefore, I suggest checking my notes in [`MLOpsND_Deployment.md`](https://github.com/mxagar/mlops_udacity/blob/main/03_Deployment/MLOpsND_Deployment.md#8-excurs-deployment-to-aws-ecs).
+
+In summary, we need to:
+
+- Create an AWS account and install the [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
+- Create a dockerized application, as explained in [Docker Container](#docker-container).
+- Configure the app and its components in AWS.
+- Run the commands specified in [`push_to_ecr.sh`](./push_to_ecr.sh):
+
+  ```bash
+  $ aws configure # enter the access key and the secret/pass
+  # chmod a+x push_to_ecr.sh
+  $ ./push_to_ecr.sh
+  ```
 
 ## Results and Conclusions
 
